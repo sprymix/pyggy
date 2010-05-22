@@ -1,0 +1,12 @@
+
+%pref LONG SHORT ;
+
+# This grammar would be ambiguous if not for the %prec() directives
+Stmt -> %prec(LONG) IF Expr THEN Stmt ELSE Stmt
+    | %prec(SHORT) IF Expr THEN Stmt
+    | s
+    ;
+
+Expr -> e
+    ;
+

@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="next" href="module-pyggy.pyggy.html">
+<LINK REL="prev" href="module-pyggy.glr.html">
+<LINK REL="parent" HREF="node11.html">
+<LINK REL="next" href="module-pyggy.pyggy.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="pyggy.pylly - Lexer generation">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>3.5 pyggy.pylly - Lexer generation</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="3.4 pyggy.glr - The" 
+  href="module-pyggy.glr.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="3. API Reference" 
+  HREF="node11.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="3.6 pyggy.pyggy - Grammar" 
+  href="module-pyggy.pyggy.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-pyggy.glr.html">3.4 pyggy.glr - The</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node11.html">3. API Reference</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-pyggy.pyggy.html">3.6 pyggy.pyggy - Grammar</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION005500000000000000000">
+3.5 <tt class="module">pyggy.pylly</tt> - Lexer generation</A>
+</H1>
+
+
+<P>
+This module implements the lexer generator.  It is responsible for
+reading in a lexer spec file (in <span class="file">.pyl</span> format), generating
+finite state machines and emitting tables for the machines into a
+Python module.
+
+<P>
+This module can be accessed from the command line or through a call
+from Python.  To run from the command line:
+
+<P>
+<div class="verbatim"><pre>
+$ python pylly.py [-d debuglevel] infile.pyl outfile.py
+</pre></div>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-29"><tt class="function">pyggy.pylly.parsespec</tt></a></b>(</nobr></td>
+  <td><var>fname, outfname, debug=0</var>)</td></tr></table>
+<dd>
+The <tt class="function">parsespec</tt> function causes the input file <code>fname</code>
+to be processed and finite state machine tables to be generated to
+<code>fname</code>.  If <code>debug</code> is set, increasing amounts of diagnostic
+output will be emitted.  The debug levels (especially higher-levels)
+are subject to change but are currently:
+
+<P>
+<table border align="center" style="border-collapse: collapse">
+  <thead>
+    <tr class="tableheader">
+      <th align="left"><b>Level</b>&nbsp;</th>
+      <th align="left"><b>Description</b>&nbsp;</th>
+      </tr>
+    </thead>
+  <tbody valign="baseline">
+    <tr><td align="left" valign="baseline"><tt class="exception">0</tt></td>
+        <td align="left">Output a count of ambiguities in the lexer.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">1</tt></td>
+        <td align="left">Output detailed diagnostics of the generated lexer.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">2</tt></td>
+        <td align="left">Show the DFAs constructed for each start state with <span class="file">dotty</span>.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">3</tt></td>
+        <td align="left">Show the NFA constructed from the spec file with <span class="file">dotty</span>.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">10</tt></td>
+        <td align="left">Show the parse tree from the spec file with <span class="file">dotty</span>.</td></tbody>
+</table>
+
+<P>
+This function may raise <tt class="class">pyggy.SpecError</tt> if there are any
+errors in the spec file or <tt class="class">pyggy.InternalError</tt>.
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="3.4 pyggy.glr - The" 
+  rel="prev" title="3.4 pyggy.glr - The" 
+  href="module-pyggy.glr.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="3. API Reference" 
+  rel="parent" title="3. API Reference" 
+  HREF="node11.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="3.6 pyggy.pyggy - Grammar" 
+  rel="next" title="3.6 pyggy.pyggy - Grammar" 
+  href="module-pyggy.pyggy.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-pyggy.glr.html">3.4 pyggy.glr - The</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node11.html">3. API Reference</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-pyggy.pyggy.html">3.6 pyggy.pyggy - Grammar</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

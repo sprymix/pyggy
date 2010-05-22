@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: pyggy
+Version: 0.4
+Summary: Lexer and GLR parser generator
+Home-page: http://www.lava.net/~newsham/pyggy/
+Author: Tim Newsham
+Author-email: newsham@lava.net
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN

@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="next" HREF="node9.html">
+<LINK REL="prev" HREF="node7.html">
+<LINK REL="parent" HREF="node4.html">
+<LINK REL="next" HREF="node9.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="Visualization">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>2.4 Visualization</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="2.3 Using PyGgy" 
+  HREF="node7.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="2. Quick Start" 
+  HREF="node4.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="2.5 Using PyLly with" 
+  HREF="node9.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node7.html">2.3 Using PyGgy</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node4.html">2. Quick Start</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node9.html">2.5 Using PyLly with</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION004400000000000000000">
+2.4 Visualization</A>
+</H1>
+Because many of the data structures used and returned by PyGgy and
+PyLly are complex, PyGgy provides hooks to visualize them using
+the AT&amp;T GraphViz program <span class="file">dotty</span>.  If you do not have
+the GraphViz program, you will still be able to use the PyGgy package
+but you may not be able to access all the debugging information.
+GraphViz is available free of charge at <em class="citetitle"><a
+ href="http://www.research.att.com/sw/tools/graphviz/"
+ title="http://www.research.att.com/sw/tools/graphviz/"
+ >http://www.research.att.com/sw/tools/graphviz/</a></em>.
+
+<P>
+To use graphviz with PyGgy, make sure that <span class="file">dotty</span> is in your path,
+and invoke PyGgy or PyLly with a high debug value (for example,
+specifying <code>debug=3</code> as an argument to <code>getlexer</code> or 
+<code>getparser</code>) or use the function <code>pyggy.glr.dottree</code> to
+display trees returned from the <code>parse</code> method.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="2.3 Using PyGgy" 
+  rel="prev" title="2.3 Using PyGgy" 
+  HREF="node7.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="2. Quick Start" 
+  rel="parent" title="2. Quick Start" 
+  HREF="node4.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="2.5 Using PyLly with" 
+  rel="next" title="2.5 Using PyLly with" 
+  HREF="node9.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node7.html">2.3 Using PyGgy</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node4.html">2. Quick Start</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node9.html">2.5 Using PyLly with</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

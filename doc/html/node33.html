@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="prev" HREF="node32.html">
+<LINK REL="parent" HREF="node27.html">
+<LINK REL="next" HREF="node34.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="Grammar">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>5.6 Grammar</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="5.5 The effect of" 
+  HREF="node32.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="5. The PyGgy spec" 
+  HREF="node27.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="6. Future Directions" 
+  HREF="node34.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node32.html">5.5 The effect of</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node27.html">5. The PyGgy spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node34.html">6. Future Directions</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION007600000000000000000">
+5.6 Grammar</A>
+</H1>
+<dl><dd class="grammar">
+<div class="productions">
+<table cellpadding="2">
+
+  <tr valign="baseline">
+    <td><code><a name="tok-gram">gram</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>line | line gram</code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-line">line</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>precoper idlist <a href="<pyGrammarToken><pyggy><;>">;</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-line">line</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pyggy><%rel>">%rel</a> <a href="<pyGrammarToken><pyggy><ID>">ID</a> precoper <a href="<pyGrammarToken><pyggy><ID>">ID</a> <a href="<pyGrammarToken><pyggy><;>">;</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-line">line</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pyggy><ID>">ID</a> <a href="<pyGrammarToken><pyggy><-&gt;>">-&gt;</a> rhslist <a href="<pyGrammarToken><pyggy><;>">;</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-line">line</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pyggy><code>">code</a> <a href="<pyGrammarToken><pyggy><SRCCODE>">SRCCODE</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-precoper">precoper</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pyggy><%left>">%left</a> | <a href="<pyGrammarToken><pyggy><%right>">%right</a> | <a href="<pyGrammarToken><pyggy><%nonassoc>">%nonassoc</a> | <a href="<pyGrammarToken><pyggy><%pref>">%pref</a> | <a href="<pyGrammarToken><pyggy><%gt>">%gt</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-rhslist">rhslist</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>optprec rhsellist optcode</code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-rhslist">rhslist</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>rhslist <a href="<pyGrammarToken><pyggy><ALT>">ALT</a> optprec rhsellist optcode</code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-optcode">optcode</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pyggy><SRCCODE>">SRCCODE</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-optcode">optcode</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    </tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-rhsellist">rhsellist</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>rhsellist rhsel</code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-rhsellist">rhsellist</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    </tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-rhsel">rhsel</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pyggy><ID>">ID</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-rhsel">rhsel</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pyggy><(>">(</a> rhslist <a href="<pyGrammarToken><pyggy><)>">)</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-rhsel">rhsel</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>rhsel <a href="<pyGrammarToken><pyggy><*>">*</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-rhsel">rhsel</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>rhsel <a href="<pyGrammarToken><pyggy><+>">+</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-rhsel">rhsel</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>rhsel <a href="<pyGrammarToken><pyggy><?>">?</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-idlist">idlist</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>idlist <a href="<pyGrammarToken><pyggy><ID>">ID</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-idlist">idlist</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    </tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-optprec">optprec</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pyggy><%prec>">%prec</a> <a href="<pyGrammarToken><pyggy><(>">(</a> <a href="<pyGrammarToken><pyggy><ID>">ID</a> <a href="<pyGrammarToken><pyggy><)>">)</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-optprec">optprec</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    </tr>
+</table>
+</div>
+<a class="grammar-footer"
+  href="grammar-pyggy.txt" type="text/plain"
+  >Download entire grammar as text.</a>
+</dd></dl>
+	
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="5.5 The effect of" 
+  rel="prev" title="5.5 The effect of" 
+  HREF="node32.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="5. The PyGgy spec" 
+  rel="parent" title="5. The PyGgy spec" 
+  HREF="node27.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="6. Future Directions" 
+  rel="next" title="6. Future Directions" 
+  HREF="node34.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node32.html">5.5 The effect of</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node27.html">5. The PyGgy spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node34.html">6. Future Directions</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

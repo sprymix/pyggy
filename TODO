@@ -1,0 +1,45 @@
+
+General :
+  - use EBNF rules in the pyggy and pylly grammars.
+  - more testing.  We need to use these tools for real things to see if
+    they are useful and what features work well and what is needed.
+  - A scannerless parser would be nice.  See if there's a good way
+    to extend PyGgy or implement an alternate parser with scannerless
+    techniques.  If we do this, pylly should use it to read its spec
+    file (its far from a regular lexer)
+  - write a simple shift reduce parser.   Its really easy to do and
+    if a grammar has no ambiguities its more efficient and easier 
+    to use (PyGgy's trees have a node listing all possibilities under
+    a non-terminal, those arent needed if the grammar is unambiguous).
+    Maybe an LALR parser generator would be nice too, maybe not..
+  - docstrings!
+  - documentation in traditional python style webpages.
+  - when emitting code, put a comment in that says where its from.
+  - use an exception class.
+
+
+PyLly :
+  - add an option for case insensitive matching.
+  - looks like we have two tokens for caret.  unify them.
+  - get rid of the ERR token?
+  - implement reject rules?  Would require keeping track of all the
+    previous accepting states as well as their position in the stream
+    and all bytes that occur afterwards.
+  - Consider wrapping up the lexer actions in a single class with an
+    __init__ function.  This would make keeping lexer state easier for
+    people using pylly to write lexers.
+  - dfa.py's sanity function needs friendlier output.
+  - lexers cannot return arbitrary values for tokens right now.  They
+    are always returned as strings.  This needs to be fixed.
+
+PyGgy :
+  - a %prec() rule on a production should override all other
+    precedences.  Right now if there is an existing precedence
+    that conflicts, a conflict error is given.
+  - Calculation of the terminal names so that they can be emitted and
+    used by the lexer?  Right now we assume that the token names are
+    strings with the token identifier value.
+  - performing semantic actions during reductions?  possible?
+  - using semantic actions to disambiguate?
+  - allow automated AST generation as an option.
+

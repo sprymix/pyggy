@@ -1,0 +1,9 @@
+
+# lexer for test2.pyg
+INITIAL :
+	"\+" : return "PLUS"
+	"\*" : return "TIMES"
+	"[[:alpha:]][[:alnum:]]*" : return "ID"
+	"\n" : return  # ignore newlines
+	"." : print "skipping unknown letter", self.tokdata[0]
+

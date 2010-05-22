@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="next" HREF="node30.html">
+<LINK REL="prev" HREF="node28.html">
+<LINK REL="parent" HREF="node27.html">
+<LINK REL="next" HREF="node30.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="Precedence rules">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>5.2 Precedence rules</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="5.1 Production rules" 
+  HREF="node28.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="5. The PyGgy spec" 
+  HREF="node27.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="5.3 Action Code" 
+  HREF="node30.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node28.html">5.1 Production rules</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node27.html">5. The PyGgy spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node30.html">5.3 Action Code</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION007200000000000000000">
+5.2 Precedence rules</A>
+</H1>
+Precedence rules are used to disambiguate ambiguous parses in the
+grammar.  They can be used to disambiguate an otherwise ambiguous
+grammar.  There are two precedence mechanisms.  The first is to assign
+precedences and associativities to terminals.  This is done with
+a precedence rule which specifies an associativity
+followed by a list of non-terminals followed by a semicolon.
+The associativity may be one of <code>%left</code>, <code>%right</code>
+or <code>%nonassoc</code>.  An example of a precedence rule is:
+
+<P>
+<div class="verbatim"><pre>
+%left TOK_MUL TOK_ADD ;
+</pre></div>
+
+<P>
+All tokens specified in this way are given priorities from highest
+(most prefered) to lowest (lest prefered) in the order they are 
+encountered in the
+spec file.  The tokens are also assigned the designated associativity.
+Any production making use of these terminals inherits their
+associativity and precedence.
+
+<P>
+It is also possible to directly assign a precedence and an associativity
+to a production.  This is done by prefixing a right hand side of a
+production with a <code>%prec</code> operator.  
+For example, the following grammar has a
+well known ambiguity:
+
+<P>
+<div class="verbatim"><pre>
+Expr -&gt; e
+    ;
+Stmt -&gt; IF Expr THEN Stmt ELSE Stmt
+    | IF Expr THEN Stmt 
+    | s
+    ;
+</pre></div>
+
+<P>
+For example <code>IF e THEN s ELSE IF e THEN s ELSE s</code> can be parsed
+either as <code>IF e THEN s ELSE [IF e THEN s ELSE s]}</code> or
+<code>IF e THEN s ELSE [IF e THEN s] ELSE s</code>.  We can specify that
+the first <code>Stmt</code> production has higher precedence than the second
+by specifying two dummy precedences and referencing them from
+the right hand sides:
+
+<P>
+<div class="verbatim"><pre>
+%nonassoc LONG SHORT ;
+
+Stmt -&gt; %prec(LONG) IF Expr THEN Stmt ELSE Stmt
+    | %prec(SHORT) IF Expr THEN Stmt 
+    | s
+    ;
+
+Expr -&gt; e
+    ;
+</pre></div>
+
+<P>
+The resulting parser has no ambiguities and prefers
+matching the longer statement whenever possible (binding the
+else statement to the nearest if statement).  
+See <span class="file">exampmles/test3.py</span> for a complete example.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="5.1 Production rules" 
+  rel="prev" title="5.1 Production rules" 
+  HREF="node28.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="5. The PyGgy spec" 
+  rel="parent" title="5. The PyGgy spec" 
+  HREF="node27.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="5.3 Action Code" 
+  rel="next" title="5.3 Action Code" 
+  HREF="node30.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node28.html">5.1 Production rules</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node27.html">5. The PyGgy spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node30.html">5.3 Action Code</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

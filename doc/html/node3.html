@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="next" HREF="node4.html">
+<LINK REL="prev" href="contents.html">
+<LINK REL="parent" HREF="pyggy.html">
+<LINK REL="next" HREF="node4.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT=". Introduction">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>1. Introduction</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="Contents" 
+  href="contents.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="PyGgy Manual" 
+  HREF="pyggy.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="2. Quick Start" 
+  HREF="node4.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="contents.html">Contents</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="pyggy.html">PyGgy Manual</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node4.html">2. Quick Start</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION003000000000000000000">
+1. Introduction</A>
+</H1>
+
+<P>
+PyGgy is a python package for generating parsers and lexers in python.
+The PyGgy distribution contains two tools:
+
+<P>
+<table border align="center" style="border-collapse: collapse">
+  <thead>
+    <tr class="tableheader">
+      <th align="left"><b>Tool</b>&nbsp;</th>
+      <th align="left"><b>Description</b>&nbsp;</th>
+      </tr>
+    </thead>
+  <tbody valign="baseline">
+    <tr><td align="left" valign="baseline"><tt class="exception">PyLly (Pronounced "pile-ey")</tt></td>
+        <td align="left"> A lexer generator that generates
+            DFA tables for lexing tokens.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">PyGgy (Pronounced "piggy")</tt></td>
+        <td align="left">A parser generator that generates 
+            SLR tables for a GLR parsing engine.</td></tbody>
+</table>
+
+<P>
+The PyLly program is used to pregenerate tables for a finite state
+machine from a lexer specification.  There is a lexer engine that uses
+the tables to tokenize an input stream.
+
+<P>
+The PyGgy program is used to pregenerate parser tables from a parser
+specification.  There is a GLR parsing engine that uses the tables 
+to parse a stream of input tokens.  Because GLR parsing is used, the
+parser can deal with arbitrary grammars, even if they are recursive
+or ambiguous.
+
+<P>
+PyGgy is self hosting - PyGgy parsers and PyLly lexers are used
+to process the specification files used by both PyGgy and PyLly.
+
+<P>
+This is version 0.4 of PyGgy.  This release contains minor bug fixes
+to the 0.3 release.
+This is an alpha release;  the public interfaces are subject to
+change, and there may be bugs in the code.  This
+version of PyGgy is placed in the public domain.  This means anyone
+can do anything with it with no restrictions whatsoever.
+
+<P>
+This version has been tested with Python 2.3.3.
+	
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="Contents" 
+  rel="prev" title="Contents" 
+  href="contents.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="PyGgy Manual" 
+  rel="parent" title="PyGgy Manual" 
+  HREF="pyggy.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="2. Quick Start" 
+  rel="next" title="2. Quick Start" 
+  HREF="node4.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="contents.html">Contents</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="pyggy.html">PyGgy Manual</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node4.html">2. Quick Start</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

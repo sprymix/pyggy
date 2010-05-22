@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="next" href="module-pyggy.pylly.html">
+<LINK REL="prev" href="module-pyggy.srgram.html">
+<LINK REL="parent" HREF="node11.html">
+<LINK REL="next" href="module-pyggy.pylly.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="pyggy.glr - The PyGgy parsing engine">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>3.4 pyggy.glr - The PyGgy parsing engine</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="3.3 pyggy.srgram" 
+  href="module-pyggy.srgram.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="3. API Reference" 
+  HREF="node11.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="3.5 pyggy.pylly - Lexer" 
+  href="module-pyggy.pylly.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-pyggy.srgram.html">3.3 pyggy.srgram</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node11.html">3. API Reference</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-pyggy.pylly.html">3.5 pyggy.pylly - Lexer</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION005400000000000000000">
+3.4 <tt class="module">pyggy.glr </tt> - The PyGgy parsing engine</A>
+</H1>
+
+
+<P>
+This module implements the Generalized-LR parsing engine and provides
+the supporting data structures and helper functions.
+
+<P>
+Parse trees are composed of alternating levels of <tt class="class">symnode</tt>
+and <tt class="class">rulenode</tt> instances.  The root of the parse tree is
+a <tt class="class">symnode</tt> for the start symbol of the grammar.
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><span class="typelabel">class</span>&nbsp;<a name="l2h-22"><tt class="class">pyggy.glr.symnode</tt></a></b>(</nobr></td>
+  <td><var>sym, possibilities, cover</var>)</td></tr></table>
+<dd>
+The <tt class="class">symnode</tt> class is used to represent terminals and non-terminals
+in the parse tree while parsing.  It's <code>sym</code> field is either
+a tuple of the token name and value for terminals or a non-terminal
+symbol.  The <code>possibilities</code> field holds a list of all possible
+derivations of the current symbol.  Each element in <code>possibilities</code>
+is a <tt class="class">rulenode</tt> instance.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><span class="typelabel">class</span>&nbsp;<a name="l2h-23"><tt class="class">pyggy.glr.rulenode</tt></a></b>(</nobr></td>
+  <td><var>rule, elements, cover</var>)</td></tr></table>
+<dd>
+The <tt class="class">rulenode</tt> class is used to represent a production used
+in the derivation.  It's <code>rule</code> member specifies which production
+in the grammar the <tt class="class">rulenode</tt> represents.  It is a tuple
+of the left hand side symbol, a count of right hand side elements and
+the production number in the grammar.  The <code>elements</code> member
+is a list of <tt class="class">symnode</tt>s for the right hand side of the
+production.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-24"><tt class="function">pyggy.glr.dottree</tt></a></b>(</nobr></td>
+  <td><var>tree, printcover=0</var>)</td></tr></table>
+<dd>
+This is a helper for visualizing a parse tree.  It uses the
+<span class="file">dotty</span> program to show a graphical representation of the
+parse tree <code>tree</code>.  If <code>printcover</code> is true, the
+token positions each tree node covers is also displayed.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><span class="typelabel">class</span>&nbsp;<a name="l2h-25"><tt class="class">pyggy.glr.GLR</tt></a></b>(</nobr></td>
+  <td><var>gram</var>)</td></tr></table>
+<dd>
+The <tt class="class">GLR</tt> class implements the GLR parsing engine.  It takes
+in a single argument which is a <tt class="class">pyggy.srgram.SRGram</tt> instance.
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-26"><tt class="method">setlexer</tt></a></b>(</nobr></td>
+  <td><var>lex</var>)</td></tr></table>
+<dd>
+Sets input to come from the lexer <code>lex</code>.  This must be called
+before parsing is started.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-27"><tt class="method">parse</tt></a></b>(</nobr></td>
+  <td>)</td></tr></table>
+<dd>
+Parses the stream of tokens from the designated lexer and return
+a parse tree.
+
+<P>
+This method may raise <tt class="class">pyggy.PaseError</tt> or <tt class="class">pyggy.InternalError</tt>.
+</dl>
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="3.3 pyggy.srgram" 
+  rel="prev" title="3.3 pyggy.srgram" 
+  href="module-pyggy.srgram.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="3. API Reference" 
+  rel="parent" title="3. API Reference" 
+  HREF="node11.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="3.5 pyggy.pylly - Lexer" 
+  rel="next" title="3.5 pyggy.pylly - Lexer" 
+  href="module-pyggy.pylly.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-pyggy.srgram.html">3.3 pyggy.srgram</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node11.html">3. API Reference</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-pyggy.pylly.html">3.5 pyggy.pylly - Lexer</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

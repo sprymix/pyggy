@@ -1,0 +1,74 @@
+
+PyGgy v0.4
+Tim Newsham
+2004 Oct 15
+Public Domain
+
+
+---[ Description
+
+PyGgy is a python package for generating parsers and lexers in python.
+The PyGgy distribution contains two tools:
+
+    PyLly - (Pronounced "pile-ey") A lexer generator that generates
+            DFA tables for lexing tokens.
+    PyGgy - (Pronounced "piggy") A parser generator that generates 
+            SLR tables for a GLR parsing engine.
+
+The PyLly program is used to pregenerate tables for a finite state
+machine from a lexer specification.  There is a lexer engine that uses
+the tables to tokenize an input stream.
+
+The PyGgy program is used to pregenerate parser tables from a parser
+specification.  There is a GLR parsing engine that uses the tables 
+to parse a stream of input tokens.  Because GLR parsing is used, the
+parser can deal with arbitrary grammars, even if they are recursive
+or ambiguous.
+
+PyGgy is self hosting -- PyGgy parsers and PyLly lexers are used
+to process the specification files used by both PyGgy and PyLly.
+
+This is version 0.4 of PyGgy.  This release contains minor bug fixes
+to the 0.3 release.
+This is an alpha release;  the public interfaces are subject to
+change, and there may be bugs in the code.  This
+version of PyGgy is placed in the public domain.  This means anyone
+can do anything with it with no restrictions whatsoever.
+
+This version has been tested with Python 2.3.3.
+
+
+
+
+---[ Installing
+
+To install the PyGgy package, unpack the archive, change into the
+"pyggy" directory and run the setup program:
+
+    $ python setup.py install
+
+
+---[ Documentation
+
+Documenation can be found in HTML form in doc/html/index.html.
+Other formats may be made with doc/Makefile.  This Makefile
+depends on having the Python distribution around.  The path
+to the distribution should be set at the top of the Makefile.
+
+Online documentation can be found at:
+
+   http://www.lava.net/~newsham/pyggy/html/
+
+
+
+---[ Home Page, Author and Rights.
+
+PyGgy's home page is currently http://www.lava.net/~newsham/pyggy/.
+If this address changes in the future, this web page should point to
+the new home page.
+
+The author of this release can be reached at newsham@lava.net.
+
+This package is placed in the public domain.  This means you can
+do anything with it that your conscience sees fit (even if I object).
+

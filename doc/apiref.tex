@@ -1,0 +1,316 @@
+\chapter{API Reference}
+
+This section describes the public interfaces provided by
+the PyGgy package.
+
+\section{\module{pyggy}}
+\declaremodule{extension}{pyggy}
+\modulesynopsis{The PyGgy and PyLly parsing and lexing package}
+\moduleauthor{Tim Newsham}{newsham@lava.net}
+
+The \module{pyggy} module is the container for the entire PyGgy
+and PyLly package.  Importing this module loads in the ``simple''
+API.   This API consists of a number of utility functions and
+exception classes.
+
+\begin{funcdesc}{pyggy.generate}{fname, targ, debug=0, forcgen=0}
+This function takes in filenames specifying a specification file
+and an output file name.  If the output file does not exist or
+is older than the specification file, it processes the specification
+file and generates tables into the target file.  The input specification
+must be a \file{.pyl} or \file{.pyg} file.  If the \code{debug} argument
+is specified, increased debugging information is emitted while
+processing the spec file.  For
+a description of the debug levels see the documentation on the
+\module{pyggy.pyggy} and \module{pyggy.pylly} modules.  If \code{forcegen}
+is true, the specification file is processed whether or not it is
+newer than the target file.
+
+If an invalid specification file is specified, \class{pyggy.ApiError}
+is raised.  Any exception raised by \method{pyggy.pyggy.parsespec} or
+\method{pyggy.pylly.parsespec} may also be raised.
+\end{funcdesc}
+
+\begin{funcdesc}{pyggy.getlexer}{specfname, debug=0, forcegen=0}
+This function generates a lexer table module from a lexer spec file, imports
+the module and returns a \class{pyggy.lexer.lexer} instance and the
+module.  The arguments \code{debug} and \code{forcegen} have the
+same meaning as in the \function{generate} function.
+
+This function can raise any of the exceptions raised by \function{generate}.
+\end{funcdesc}
+
+\begin{funcdesc}{pyggy.getparser}{specfname, debug=0, forcegen=0}
+This function generates a parser table module from a parser spec file,
+imports the module and returns a \class{pyggy.glr.GLR} instance
+and the module.  The arguments \code{debug} and \code{forcegen} have the
+same meaning as in the \function{generate} function.
+
+This function can raise any of the exceptions raised by \function{generate}.
+\end{funcdesc}
+
+
+\begin{funcdesc}{pyggy.proctree}{t, gram, allowambig=0}
+This function post-processes a parse tree previously returned
+from a call to a \method{parse} method.  It takes as arguments
+the parse tree and the module containing the parse tables.  The
+optional argument \code{allowambig} is used to specify that ambiguous
+parses are allowed, otherwise a \class{pyggy.AmbigParseError} is
+raised if any ambiguities are encountered in the parse tree.
+
+The function walks the parse tree in a bottom-up fashion executing
+the semantic action code for each production used in the derivation.
+For each action executed, the list of the values from the right
+hand side of the production are passed in.  These values are either
+from the \code{value} fields of tokens, or the values previously
+returned by other action code functions.  If ambiguous parses are
+disallowed, each right hand side element is represented by the
+element's unique value.  In the case that ambiguous parses are allowed
+and an ambiguity is found in the parse tree, the ambiguous right
+hand side element will be represented with a \class{pyggy.glr.symnode}
+instance whose \code{possibilities} field is a list of the alternate
+values. 
+
+The \function{proctree} function returns the value associated with
+the start symbol which is at the root of the parse tree.
+
+This function may raise \class{pyggy.AmbigParseError} if an ambiguous
+parse is detected or \class{pyggy.ApiError} if an invalid tree is passed in.
+This function alters the parse tree as it operates on it.
+\end{funcdesc}
+
+\begin{excdesc}{pyggy.Error}
+A superclass of all PyGgy generated exceptions.
+\end{excdesc}
+
+\begin{excdesc}{pyggy.InternalError}
+An error in the inner workings of PyGgy or PyLly.  This is a type
+of \class{pyggy.Error}.
+\end{excdesc}
+
+\begin{excdesc}{pyggy.ApiError}
+This error specifies that there is an error in the way that
+PyGgy or PyLly is being used.  This is a type of \class{pyggy.Error}.
+\end{excdesc}
+
+\begin{excdesc}{pyggy.LexError}
+This error specifies that there was an error while lexing an
+input source.  This exception is not currently used since the lexer
+currently returns an error token on errors.  This exception is a
+type of \class{pyggy.Error}.
+\end{excdesc}
+
+\begin{excclassdesc}{pyggy.ParseError}{str, tok}
+This error specifies that an error occured during the parsing of
+a token stream.  It stores a description of the error in \code{str}
+and the token that caused the error in \code{tok}.  This exception
+is a type of \class{pyggy.Error}.
+\end{excclassdesc}
+
+\begin{excdesc}{pyggy.AmbigParseError}
+This error specifies that an ambiguity was present in a parse tree
+when ambiguities are disallowed.  It is a type of \class{pyggy.ApiError}.
+\end{excdesc}
+
+
+\section{\module{pyggy.lexer} -- The lexing engine}
+\declaremodule{extension}{pyggy.lexer}
+\modulesynopsis{The PyLly lexing engine}
+\moduleauthor{Tim Newsham}{newsham@lava.net}
+
+\begin{datadesc}{pyggy.lexer.TOK\_ERR}
+\code{TOK\_ERR} is returned by the lexer whenever a character is encountered
+which cannot be lexed.
+\end{datadesc}
+
+\begin{classdesc}{pyggy.lexer.lexer}{lexspec}
+The lexer class provides an extensible lexer class capable of lexing
+tokens from an input source based on tables generated by PyLly.
+The \code{lexspec} argument is passed in from a generated table module.
+It should be a tuple made up of a DFA table, a list of start states,
+a list of actions for each accepting state, a list of actions to
+be performed at the end of file and a dictionary of character classes.
+The format of the \code{lexspec} argument is subject to change.
+
+The \class{lexer} class provides lexing from input strings or from
+files.  The class can be subclassed to provide lexers with different
+input behaviors.
+
+\begin{memberdesc}{value}
+The \code{value} member holds the value associated with the most
+recently returned token.
+\end{memberdesc}
+
+\begin{methoddesc}{setinputstr}{str}
+Sets the input source to be the characters in the \code{str} argument.
+\end{methoddesc}
+
+\begin{methoddesc}{setinput}{fname}
+Sets the input to source to be the characters from the specified file.
+A filename of \file{-} indicates data should come from \code{stdin}.
+\end{methoddesc}
+
+\begin{methoddesc}{token}{}
+Returns the next token lexed from the input stream.  If there are no
+more tokens left, the value \code{None} is returned.  If an error occurs
+the value \code{pyggy.lexer.TOK\_EOF} is returned.  In the future an
+exception may be raised in this situation.  Before a token is returned,
+the \code{value} member is set to the value specified in the action
+code for the token, or to a string of the characters in the token.
+\end{methoddesc}
+
+\end{classdesc}
+
+
+
+\section{\module{pyggy.srgram}}
+\declaremodule{extension}{pyggy.srgram}
+\modulesynopsis{Shift-Reduce table handler}
+\moduleauthor{Tim Newsham}{newsham@lava.net}
+
+\begin{classdesc}{pyggy.srgram.SRGram}{srspec}
+This class encapsulates the tables of a shift-reduce parser to
+isolate the parsing engine from the details of the table implementation.
+It's constructor takes a single argument which should be the
+grammar table specification from a generated grammar table module.
+The specification is a tuple of a GOTO table, an ACTION table and
+a list of semantic actions.
+The format of this specification is subject to change.
+\end{classdesc}
+
+
+
+\section{\module{pyggy.glr } -- The PyGgy parsing engine}
+\declaremodule{extension}{pyggy.glr}
+\modulesynopsis{The PyGgy parsing engine}
+\moduleauthor{Tim Newsham}{newsham@lava.net}
+
+This module implements the Generalized-LR parsing engine and provides
+the supporting data structures and helper functions.
+
+
+Parse trees are composed of alternating levels of \class{symnode}
+and \class{rulenode} instances.  The root of the parse tree is
+a \class{symnode} for the start symbol of the grammar.
+
+\begin{classdesc}{pyggy.glr.symnode}{sym, possibilities, cover}
+The \class{symnode} class is used to represent terminals and non-terminals
+in the parse tree while parsing.  It's \code{sym} field is either
+a tuple of the token name and value for terminals or a non-terminal
+symbol.  The \code{possibilities} field holds a list of all possible
+derivations of the current symbol.  Each element in \code{possibilities}
+is a \class{rulenode} instance.
+\end{classdesc}
+
+\begin{classdesc}{pyggy.glr.rulenode}{rule, elements, cover}
+The \class{rulenode} class is used to represent a production used
+in the derivation.  It's \code{rule} member specifies which production
+in the grammar the \class{rulenode} represents.  It is a tuple
+of the left hand side symbol, a count of right hand side elements and
+the production number in the grammar.  The \code{elements} member
+is a list of \class{symnode}s for the right hand side of the
+production.
+\end{classdesc}
+
+\begin{funcdesc}{pyggy.glr.dottree}{tree, printcover=0}
+This is a helper for visualizing a parse tree.  It uses the
+\file{dotty} program to show a graphical representation of the
+parse tree \code{tree}.  If \code{printcover} is true, the
+token positions each tree node covers is also displayed.
+\end{funcdesc}
+
+\begin{classdesc}{pyggy.glr.GLR}{gram}
+The \class{GLR} class implements the GLR parsing engine.  It takes
+in a single argument which is a \class{pyggy.srgram.SRGram} instance.
+
+\begin{methoddesc}{setlexer}{lex}
+Sets input to come from the lexer \code{lex}.  This must be called
+before parsing is started.
+\end{methoddesc}
+
+\begin{methoddesc}{parse}{}
+Parses the stream of tokens from the designated lexer and return
+a parse tree.
+
+This method may raise \class{pyggy.PaseError} or \class{pyggy.InternalError}.
+\end{methoddesc}
+\end{classdesc}
+
+
+
+\section{\module{pyggy.pylly} -- Lexer generation}
+\declaremodule{extension}{pyggy.pylly}
+\modulesynopsis{Lexer generator}
+\moduleauthor{Tim Newsham}{newsham@lava.net}
+
+This module implements the lexer generator.  It is responsible for
+reading in a lexer spec file (in \file{.pyl} format), generating
+finite state machines and emitting tables for the machines into a
+Python module.
+
+This module can be accessed from the command line or through a call
+from Python.  To run from the command line:
+
+\begin{verbatim}
+$ python pylly.py [-d debuglevel] infile.pyl outfile.py
+\end{verbatim}
+
+\begin{funcdesc}{pyggy.pylly.parsespec}{fname, outfname, debug=0}
+The \function{parsespec} function causes the input file \code{fname}
+to be processed and finite state machine tables to be generated to
+\code{fname}.  If \code{debug} is set, increasing amounts of diagnostic
+output will be emitted.  The debug levels (especially higher-levels)
+are subject to change but are currently:
+
+\begin{tableii}{l|l}{exception}{Level}{Description}
+  \lineii{0} {Output a count of ambiguities in the lexer.}
+  \lineii{1} {Output detailed diagnostics of the generated lexer.}
+  \lineii{2} {Show the DFAs constructed for each start state with \file{dotty}.}
+  \lineii{3} {Show the NFA constructed from the spec file with \file{dotty}.}
+  \lineii{10}{Show the parse tree from the spec file with \file{dotty}.}
+\end{tableii}
+
+This function may raise \class{pyggy.SpecError} if there are any
+errors in the spec file or \class{pyggy.InternalError}.
+\end{funcdesc}
+
+
+
+\section{\module{pyggy.pyggy} -- Grammar generation}
+\declaremodule{extension}{pyggy.pyggy}
+\modulesynopsis{Parser generator}
+\moduleauthor{Tim Newsham}{newsham@lava.net}
+
+
+This module implements the parser generator.  It is responsible for
+reading in a parser spec file (in \file{.pyg} format), generating
+a shift-reduce tables and emitting the tables into a
+Python module.
+
+This module can be accessed from the command line or through a call
+from Python.  To run from the command line:
+
+\begin{verbatim}
+$ python pyggy.py [-d debuglevel] infile.pyg outfile.py
+\end{verbatim}
+
+\begin{funcdesc}{pyggy.pyggy.parsespec}{fname, outfname, debug=0}
+The \function{parsespec} function causes the input file \code{fname}
+to be processed and shift-reduce tables to be generated to
+\code{fname}.  If \code{debug} is set, increasing amounts of diagnostic
+output will be emitted.  The debug levels (especially higher-levels)
+are subject to change but are currently:
+
+\begin{tableii}{l|l}{exception}{Level}{Description}
+  \lineii{0} {Output a count of ambiguities in the parser.}
+  \lineii{1} {Output detailed diagnostics of the generated parser.}
+  \lineii{2} {Turn on debugging in the parser generator engine and show precedence relations.}
+  \lineii{3} {Show the LR0 state machine}
+  \lineii{11}{Show the parse tree from the spec file with \file{dotty}.}
+  \lineii{12}{Show the cover while showing the parse tree.}
+\end{tableii}
+
+This function may raise \class{pyggy.SpecError} if there are any
+errors in the spec file or \class{pyggy.InternalError}.
+\end{funcdesc}
+

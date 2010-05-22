@@ -1,0 +1,425 @@
+\chapter{Quick Start}
+
+This chapter introduces the PyGgy package and illustrates its use
+with examples.  The information in this chapter is intentionally
+incomplete.  For detailed information on using PyLly or PyGgy refer
+to the API and specification reference chapters.
+
+\section{Installing}
+To install the PyGgy package, unpack the archive, change to the
+\file{pyggy} directory and run the setup program:
+
+\begin{verbatim}
+$ python setup.py install
+\end{verbatim}
+
+
+\section{Using PyLly}
+PyLly reads in a specification file for a lexer and generates tables
+that can be used by a lexer to tokenize a stream of data.  The first
+step in using PyLly is to construct a specification file.  This
+file specifies how to pull tokens out of an input stream.  
+An example of a simple specfile is given in \file{test1.pyl}:
+
+\begin{verbatim}
+INITIAL :
+    "abc*" :    return "pattern1"
+    "d|efg" :   return "pattern2"
+    "^abx" :    return "pattern3"
+    "\n" :      return              # ignore newlines
+\end{verbatim}
+
+This specification states that if an \code{a} then a \code{b} and then an
+arbitrary number of \code{c} characters are encountered, the lexer should
+return the string with a token value of \code{"pattern1"}.  
+Similarly if a \code{d} or \code{e} followed
+by the characters \code{fg} are seen, then a token value of \code{"pattern2"} 
+should be returned.
+If the characters \code{abx} are encountered at the start of a line then
+\code{"pattern3"} is returned.  Finally if the newline character is seen,
+no token is returned.  Any other characters cause an error token
+to be returned.
+
+Once a specification file has been made, it is a simple matter to
+use it.  The \file{examples/test1.py} program provides an example:
+
+\begin{verbatim}
+import pyggy
+
+l,tab = pyggy.getlexer("test1.pyl")
+l.setinput("-")
+while 1 :
+    x = l.token()
+    if x is None :
+        break
+    print x, l.value
+\end{verbatim}
+
+The \code{getlexer} function takes care of parsing the lexer specification
+file, generating tables for a lexer, loading the tables and constructing
+a lexer.  It returns the constructed lexer and a handle on the generated
+lexer table module.  The example makes use of the lexer by first specifying
+an input file for the lexer to read from and then by calling the
+\code{token} method to retrieve each successive token.  The \code{setinput}
+method is used to specify which file to read input from.  In this case
+the special name \file{-} is used which denotes that input should
+come from \code{stdin}.  The \code{token} method returns the next token
+value from the input stream when called.  It returns \code{None} when
+the input source has been exhausted.  An auxiliary value stored in
+the \code{value} member contains the value of the token (which is usually
+a string of the characters that make up the token).
+
+The example can be run as follows:
+
+\begin{verbatim}
+$ echo "abccccdfghabx" | python test1.py
+pattern1 abcccc
+pattern2 dfg
+#ERR# h
+pattern1 ab
+#ERR# x
+\end{verbatim}
+
+Notice that the lexer returns error tokens for the unrecognized
+patterns.
+
+
+\section{Using PyGgy}
+
+PyGgy reads in a specification file for a parser and generates
+tables that can be used by a parsing engine to parse a stream of
+tokens.  The first step in using PyGgy is to construct a specification
+file which specifies the grammar to be parsed.  An example of a simple
+spec file is given in \file{examples/test2.pyg} (see \file{examples/test2.pyl}
+for the lexer that goes along with it):
+
+\begin{verbatim}
+# This grammar is ambiguous
+E -> E PLUS E
+    | E TIMES E
+    | ID
+    ;
+\end{verbatim}
+
+This specifies a grammar with one non-terminal (\code{E}) with three
+productions (\code{E -> E PLUS E}, \code{E -> E TIMES E} and \code{E -> ID}) 
+and three terminals (tokens \code{PLUS}, \code{TIMES} and \code{ID}).
+
+Building a parser from a specification file is similar to building
+a lexer from a PyLly specification file.  The example in
+\file{example/test2.py} illustrates this:
+
+\begin{verbatim}
+import pyggy
+
+[...]
+
+# instantiate the lexer and parser
+l,ltab = pyggy.getlexer("test2.pyl")
+p,ptab = pyggy.getparser("test2.pyg")
+l.setinput("-")
+p.setlexer(l)
+
+# parse the input
+tree = p.parse()
+if tree == None :
+    print "error!"
+else :
+    print "parse done: ", exprstr(tree)
+    # if you have dot, try uncommenting the following
+    #pyggy.glr.dottree(tree)
+\end{verbatim}
+
+The \code{getparser} function builds parser tables and a parser
+in a similar manner as the \code{getlexer} method previously
+discussed.  It returns both the parser and the generated module
+containing the parser tables.  Once the parser is specified, its
+input source is specified with the \code{setlexer} method.   Finally
+the \code{parse} method is called to parse the token stream from
+the lexer.
+
+The \code{parse} method parses the tokens from the lexer and returns 
+a parse tree.  The tree has a slightly different shape than might be expected
+because the parse engine can
+parse ambiguous grammars.  The root of the tree is a
+\code{pyggy.glr.symbolnode} instance.  This instance refers to one of the
+terminals or non-terminals in the grammar.  It has a list
+of the possible productions that are derived by that symbol in
+the \code{possibilities} member.  If the parse in unambiguous, there
+will be exactly one item in the \code{possibilities} list.
+Each possibility is a \code{pyggy.glr.rulenode} instance.  The \code{rulenode}
+instance represents the left hand side of a production and has
+members \code{rule} specifying which rule was matched and \code{elements}
+which is a list of all of the parsed items in the right hand side.  These
+elements are \code{symbolnode} instances.
+
+To clarify, consider the code from \file{examples/test2.py}:
+
+\begin{verbatim}
+def singleexprstr(kids) :
+    if len(kids) == 1 :
+        return kids[0].sym[1]
+    else :
+        return "(%s %s %s)" % (exprstr(kids[0]), kids[1].sym[1], exprstr(kids[2]))
+
+def exprstr(e) :
+    res = []
+    for p in e.possibilities :
+        res.append(singleexprstr(p.elements))
+    if len(res) == 1 :
+        return res[0]
+    else :
+        return "[" + string.join(res, " or ") + "]"
+\end{verbatim}
+ 
+The \code{exprstr} function is called to convert a parsed expression tree
+into a string.  The \code{exprstr} function is called with a \code{symnode} that
+always references the non-terminal \code{"E"}.
+Exprstr converts each of
+the possible parses of \code{"E"} into a string by calling \code{singleexprstr}.
+For each of the possible \code{rulenodes}, it calls the \code{singleexprstr}
+function with a list of the right hand side elements.  The \code{singleexprstr}
+function converts this right hand side list into a string.  If there
+is only one item in the right hand side, it must be an identifier, and
+the identifiers value is retrieved from the symbol information.  Otherwise
+there are three children, two expressions and an operator.  The expressions
+are converted to strings and joined into a single string with the operator
+between them.
+
+Its informative to see what the output of this function looks like:
+
+\begin{verbatim}
+$ echo "a+b*c" | python run2.py
+parse done:  [((a + b) * c) or (a + (b * c))]
+\end{verbatim}
+
+Notice that there were two possible parses of this string.  If you
+have GraphViz installed, edit the \file{examples/test2.py} example and 
+uncomment 
+the line \code{pyggy.glr.dottree(tree)} and rerun the previous test case.
+You will be shown a graphical representation of the parse tree.
+In the graph, the \code{symnodes} show up in red and the \code{rulenodes} show
+up in black.  You can also see the value of the symbol in the \code{symnode}
+and the rule in the \code{rulenode}.  Notice that the \code{symnode} for each
+non-terminal has a \code{sym} value of the non-terminal name and each terminal
+has a \code{sym} value that is a tuple of the token name and the token
+value.  Also note that the each \code{rulenode} has a rule that is a tuple
+of the name of the left hand side, the number of elements in the right
+hand side (which is also the number of items in its \code{elements} variable)
+and the index of the production in the grammar.
+
+The graphical view of the parse {\em tree} makes it obvious that its
+not a parse {\em tree} at all!  The parsing engine
+makes use of shared nodes whenever possible to avoid an exponential
+blowup in the number of nodes during an ambiguous parse.  The
+parse {\em tree} will truely be a tree if there is a unique parse.  The 
+parse {\em tree} may have cycles if there is a production which can 
+derive itself without consuming any input.  If there are no such 
+productions, there will be no cycles.
+
+Like the lexer specification file, the grammar specification file can
+be used to specify actions to be performed.  These actions are not performed
+during parsing, as is traditionally done, but can be invoked after the
+parse is complete.  The \file{example/pyg\_calc.py} example illustrates
+this.  This is a small calculator test case based on the example
+from the PLY web site 
+(\citetitle[http://systems.cs.uchicago.edu/ply/example.html]{http://systems.cs.uchicago.edu/ply/example.html}).
+The \file{example/pyg\_calc.pyg}
+file specifies the grammar and actions:
+
+\begin{verbatim}
+%left TIMES DIVIDE;
+%left PLUS;
+%right UNARYMINUS;
+
+statement -> NAME EQUALS expression :
+        names[kids[0]] = kids[2]
+    | expression :
+        print kids[0]
+    ;
+
+expression -> expression PLUS expression :
+        return kids[0] + kids[2]
+    | %prec(PLUS) expression MINUS expression :
+        return kids[0] - kids[2]
+    | expression TIMES expression :
+        return kids[0] * kids[2]
+    | expression DIVIDE expression :
+        return kids[0] / kids[2]
+    | %prec(UNARYMINUS) MINUS expression :
+        return -kids[1]
+    | LPAREN expression RPAREN :
+        return kids[1]
+    | NUMBER :
+        return kids[0]
+    | NAME :
+        if not kids[0] in names :
+                print "Undefined name '%s'" % kids[0]
+            return 0
+        return names[kids[0]]
+    ;
+\end{verbatim}
+
+Each production in the grammar specifies a block of code following
+the final colon.  After the input is parsed into a parse tree
+the actions can be applied to the parse tree with the \code{proctree}
+function as is done in \file{examples/pyg\_cal.py}:
+
+\begin{verbatim}
+import sys
+import pyggy
+
+# build the lexer and parser
+l,ltab = pyggy.getlexer("pyg_calc.pyl")
+p,ptab = pyggy.getparser("pyg_calc.pyg")
+p.setlexer(l)
+
+while 1:
+    sys.stdout.write("calc > ")
+    line = sys.stdin.readline()
+    if line == "" :
+        break
+
+    l.setinputstr(line)
+    try :
+        tree = p.parse()
+    except pyggy.ParseError,e :
+        print "parse error at '%s'" % e.str
+        continue
+    pyggy.proctree(tree, ptab)
+\end{verbatim}
+
+\code{proctree} walks the tree in a depth-first manner and
+at each node representing a production in the grammar, runs
+the action associated with that production.  When running the
+code the \code{kids} argument contains a list of the right
+hand side values of the production.
+
+
+
+\section{Visualization}
+Because many of the data structures used and returned by PyGgy and
+PyLly are complex, PyGgy provides hooks to visualize them using
+the AT\&T GraphViz program \file{dotty}.  If you do not have
+the GraphViz program, you will still be able to use the PyGgy package
+but you may not be able to access all the debugging information.
+GraphViz is available free of charge at \citetitle[http://www.research.att.com/sw/tools/graphviz/]{http://www.research.att.com/sw/tools/graphviz/}.
+
+To use graphviz with PyGgy, make sure that \file{dotty} is in your path,
+and invoke PyGgy or PyLly with a high debug value (for example,
+specifying \code{debug=3} as an argument to \code{getlexer} or 
+\code{getparser}) or use the function \code{pyggy.glr.dottree} to
+display trees returned from the \code{parse} method.
+
+
+\section{Using PyLly with PLY}
+Lexers generated by PyLly can be used by PyGgy parsers or by
+other parser packages.  The lexer interface was designed to be
+similar enough to PLY's lexer interface that PyLly lexers can
+be used as-is.  For other parsers, a small wrapper may class
+may be needed around the lexer to provide the proper interface.
+
+The \file{example/ply\_calc.py} example illustrates how to use
+a PLY parser with a PyLly lexer.  This is a small calculator test 
+case based on the example from the PLY web site 
+(\citetitle[http://systems.cs.uchicago.edu/ply/example.html]{http://systems.cs.uchicago.edu/ply/example.html}).
+The \file{example/ply\_calc.pyl} file specifies the lexer:
+
+\begin{verbatim}
+code :
+    tokens = (
+        'NAME','NUMBER',
+        'PLUS','MINUS','TIMES','DIVIDE','EQUALS',
+        'LPAREN','RPAREN',
+    )
+
+    lineno = 1
+
+    class Tok :
+        def __init__(self, l, type) :
+            self.type = type
+            self.lineno = lineno
+            self.value = l.value
+        def __str__(self) :
+            return "Tok(%s,%r,%d)" % (self.type, self.value, self.lineno)
+
+definitions :
+    NAME    "[[:alpha:]_][[:alnum:]_]*"
+    NUMBER  "[[:digit:]]+"
+
+INITIAL :
+    "\+" :  return Tok(self, "PLUS")
+    "-" :   return Tok(self, "MINUS")
+    "\*" :  return Tok(self, "TIMES")
+    "/" :   return Tok(self, "DIVIDE")
+    "=" :   return Tok(self, "EQUALS")
+    "\(" :  return Tok(self, "LPAREN")
+    "\)" :  return Tok(self, "RPAREN")
+
+    "{NAME}":   return Tok(self, "NAME")
+    "{NUMBER}":
+        try :
+            self.value = int(self.value)
+        except ValueError :
+            print "Integer value too large", self.value
+            self.value = 0
+        return Tok(self, "NUMBER")
+
+    "[[:blank:]]" : return
+    "\n+" :
+        global lineno
+        lineno += len(self.value)
+        return
+
+    "." :
+        print "Illegal character '%s'" % self.value
+        return
+\end{verbatim}
+
+Each token's value is represented by a \code{Tok} instance
+which adheres to PLY's token interface.  The specification
+also defines a list of tokens in the \code{tokens} variable
+as needed by PLY.  The \file{examples/ply\_calc.py} script
+builds the lexer and uses it to feed a PLY parser:
+
+\begin{verbatim}
+# build the lexer
+import pyggy
+l,lexer = pyggy.getlexer("ply_calc.pyl")
+tokens = lexer.tokens
+
+[...]
+
+import yacc
+yacc.yacc()
+
+while 1:
+    sys.stdout.write("calc > ")
+    line = sys.stdin.readline()
+    if line == "" :
+        break
+
+    l.setinputstr(line)
+    yacc.parse(lexer=l)
+\end{verbatim}
+
+
+\section{More Examples}
+For more examples of the use of PyLly and PyGgy refer to the
+code in the \file{examples} directory.  In addition to several
+small examples there are the beginnings of a C parser in the
+\code{examples/ansic} directory.  This example is based on
+the ANSI C test case from the D-Parser found at
+\citetitle[http://dparser.sourceforge.net/d/tests/ansic.test.g]{http://dparser.sourceforge.net/d/tests/ansic.test.g}.
+
+The most complete
+example of using PyGgy and ultimate reference for the behavior
+of PyGgy is found in the source code of PyGgy.  The files
+\file{pylly.pyl} and \file{pyggy.pyl} specify the spec file lexers 
+while the files \file{pylly.pyg} and \file{pyggy.pyg} specify their
+grammars.  The files \file{pylly.py} and \file{pyggy.py} complete
+the functionality of the lexer and parser specification reading
+code.  They are slightly complicated by their use of a lower level
+API which allows them to use pre-generated lexer and parser
+tables.  
+

@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="next" HREF="node26.html">
+<LINK REL="prev" HREF="node24.html">
+<LINK REL="parent" HREF="node18.html">
+<LINK REL="next" HREF="node26.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="Action Code">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>4.7 Action Code</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="4.6 Pattern operators" 
+  HREF="node24.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="4. The PyLly spec" 
+  HREF="node18.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="4.8 Grammar" 
+  HREF="node26.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node24.html">4.6 Pattern operators</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node18.html">4. The PyLly spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node26.html">4.8 Grammar</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION006700000000000000000">
+4.7 Action Code</A>
+</H1>
+When a pattern is matched during lexing, the action code for the pattern
+is invoked.  The code is executed with one argument, <code>self</code>, which refers
+to the lexer class (eg. <code>pyggy.lexer.lexer</code>).  When the code is called,
+the <code>self.value</code> variable contains a string of the characters that
+were matched by the pattern.  The action code may alter this variable
+as it sees fit.
+If the action code returns <code>None</code>, lexing is continued, otherwise the
+returned token is returned from the lexer to its caller.
+
+<P>
+The action code may make use of several methods in the lexer class:
+
+<P>
+<table border align="center" style="border-collapse: collapse">
+  <thead>
+    <tr class="tableheader">
+      <th align="left"><b>Method</b>&nbsp;</th>
+      <th align="left"><b>Description</b>&nbsp;</th>
+      </tr>
+    </thead>
+  <tbody valign="baseline">
+    <tr><td align="left" valign="baseline"><tt class="exception"><code>PUSHSTATE(statenum)</code></tt></td>
+        <td align="left">When lexing continues, start in the specified start state.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception"><code>POPSTATE()</code></tt></td>
+        <td align="left">When lexing continues, start in the previous start state.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception"><code>PUSHBACK(str)</code></tt></td>
+        <td align="left">take the characters in <code>str</code> and
+       push them back on the input stream so that they may be
+       matched against when lexing continues.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception"><code>ENQUEUE(tok, val)</code></tt></td>
+        <td align="left">push a token onto the lexer queue.
+       The next time a token is retrieved, it will be retrieved from
+       the lexer queue prior to matching patterns from the input
+       stream.  The lexer's <code>value</code> variable will be set from
+       <code>val</code> when <code>tok</code> is returned.</td></tbody>
+</table>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="4.6 Pattern operators" 
+  rel="prev" title="4.6 Pattern operators" 
+  HREF="node24.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="4. The PyLly spec" 
+  rel="parent" title="4. The PyLly spec" 
+  HREF="node18.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="4.8 Grammar" 
+  rel="next" title="4.8 Grammar" 
+  HREF="node26.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node24.html">4.6 Pattern operators</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node18.html">4. The PyLly spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node26.html">4.8 Grammar</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

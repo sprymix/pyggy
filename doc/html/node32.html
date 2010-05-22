@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="next" HREF="node33.html">
+<LINK REL="prev" HREF="node31.html">
+<LINK REL="parent" HREF="node27.html">
+<LINK REL="next" HREF="node33.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="The effect of precedence on Parser Construction">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>5.5 The effect of precedence on Parser Construction</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="5.4 EBNF" 
+  HREF="node31.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="5. The PyGgy spec" 
+  HREF="node27.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="5.6 Grammar" 
+  HREF="node33.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node31.html">5.4 EBNF</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node27.html">5. The PyGgy spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node33.html">5.6 Grammar</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION007500000000000000000">
+5.5 The effect of precedence on Parser Construction</A>
+</H1>
+During the construction of a parser, precedence rules are used
+to disallow certain derivations from being considered.
+The precedence rules setup a relationship between productions
+in the grammar.  Two productions in the grammar will either have
+no relation to each other, or one will be considered
+<EM>gt</EM>, <EM>right</EM>, <EM>left</EM> or <EM>nonassoc</EM> in relation
+to the other.  
+
+<P>
+If a production is <EM>gt</EM> than another, it
+can never be used to derive the second production.  For
+example if <code>[E -&gt; E * E]</code> <EM>gt</EM> <code>[E -&gt; E + E]</code> then
+the derivations <code>[E -&gt; [E -&gt; E + E] * E]</code> and 
+<code>[E -&gt; E * [E -&gt; E + E]]</code>
+will never be allowed.
+
+<P>
+If a production is <EM>right</EM> with respect to another, then
+the first production cannot derive the second one at the right-
+most position of the first production.  For example if
+<code>[E -&gt; E * E]</code> <EM>right</EM> <code>[E -&gt; E + E]</code> then the
+derivation <code>[E -&gt; [E -&gt; E + E] * E]</code> is not allowed, but the
+derivation <code>[E -&gt; E * [E -&gt; E + E]]</code> is.  Similarly the <EM>left</EM>
+relation indicates that the first production cannot derive the
+second at the left-most position.  The relationship <EM>nonassoc</EM>
+is a combination of both the <EM>right</EM> and <EM>left</EM> relationships.
+
+<P>
+The relationship between productions is inferred from the
+precedence rules and the precedence operators in a grammar
+specification file.  The precedence rules setup a precedence
+ordering among terminals.  Each precedence involving a terminal
+that has a precedence associated with it inherits the precedence
+of that symbol.  One production is <EM>gt</EM> another if it has
+a higher precedence.  Productions relate to themselves with
+the <EM>right</EM>, <EM>left</EM> or <EM>nonassoc</EM> relations if they
+contain a terminal with the given associativity.
+
+<P>
+The restrictions placed on the derivation by the precedence rules
+are used during parser construction in two ways.  First, it
+is used to prevent certain items from being added to an itemset
+if the item represents a precedence conflict.  Second, the
+computation of the <EM>FOLLOWS</EM> set is modified to compute
+the symbols that can follow each production, rather than the
+symbols that can follow each symbol.  Symbols that indicate
+a conflict are not added to the <EM>FOLLOWS</EM> set of a production.
+
+<P>
+<div class="seealso">
+  <p class="heading"><b>See Also:</b></p>
+
+<dl compact class="seetitle">
+    <dt><em class="citetitle"><a href="http://www.cs.uu.nl/groups/ST/Visser/DisambiguationFiltersForScannerlessGeneralizedLRParsers"
+        >Disambiguation Filters for Scannerless Generalized LR Parsers</a></em>
+    <dd>The precedence system used by PyGgy is based on this paper.
+  </dl>
+</div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="5.4 EBNF" 
+  rel="prev" title="5.4 EBNF" 
+  HREF="node31.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="5. The PyGgy spec" 
+  rel="parent" title="5. The PyGgy spec" 
+  HREF="node27.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="5.6 Grammar" 
+  rel="next" title="5.6 Grammar" 
+  HREF="node33.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node31.html">5.4 EBNF</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node27.html">5. The PyGgy spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node33.html">5.6 Grammar</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

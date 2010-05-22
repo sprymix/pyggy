@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="next" href="module-pyggy.glr.html">
+<LINK REL="prev" href="module-pyggy.lexer.html">
+<LINK REL="parent" HREF="node11.html">
+<LINK REL="next" href="module-pyggy.glr.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="pyggy.srgram">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>3.3 pyggy.srgram</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="3.2 pyggy.lexer - The" 
+  href="module-pyggy.lexer.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="3. API Reference" 
+  HREF="node11.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="3.4 pyggy.glr - The" 
+  href="module-pyggy.glr.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-pyggy.lexer.html">3.2 pyggy.lexer - The</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node11.html">3. API Reference</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-pyggy.glr.html">3.4 pyggy.glr - The</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION005300000000000000000">
+3.3 <tt class="module">pyggy.srgram</tt></A>
+</H1>
+
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><span class="typelabel">class</span>&nbsp;<a name="l2h-20"><tt class="class">pyggy.srgram.SRGram</tt></a></b>(</nobr></td>
+  <td><var>srspec</var>)</td></tr></table>
+<dd>
+This class encapsulates the tables of a shift-reduce parser to
+isolate the parsing engine from the details of the table implementation.
+It's constructor takes a single argument which should be the
+grammar table specification from a generated grammar table module.
+The specification is a tuple of a GOTO table, an ACTION table and
+a list of semantic actions.
+The format of this specification is subject to change.
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="3.2 pyggy.lexer - The" 
+  rel="prev" title="3.2 pyggy.lexer - The" 
+  href="module-pyggy.lexer.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="3. API Reference" 
+  rel="parent" title="3. API Reference" 
+  HREF="node11.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="3.4 pyggy.glr - The" 
+  rel="next" title="3.4 pyggy.glr - The" 
+  href="module-pyggy.glr.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="module-pyggy.lexer.html">3.2 pyggy.lexer - The</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node11.html">3. API Reference</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-pyggy.glr.html">3.4 pyggy.glr - The</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

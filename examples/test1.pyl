@@ -1,0 +1,7 @@
+
+INITIAL :
+	"abc*" : return "pattern1"
+	"d|efg" : return "pattern2"
+	"^abx" : return "pattern3"
+	"\n" : return # ignore newlines
+

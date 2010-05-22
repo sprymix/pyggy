@@ -1,0 +1,50 @@
+
+\chapter{Future Directions}
+
+There's a lot left to be done.  This package is still young and
+needs to be put through its paces.  There are still a number of
+opportunities for improvement in the current implementation.
+The grammars for the parser and lexer spec files are old and
+do not yet make use of some of the newer features in PyGgy such
+as the EBNF constructs.  The semantic actions of the parser are
+performed in a post pass.  It might be possible to execute
+these actions earlier during parsing and reduce the memory
+requirements.  The internal representations used for the NFA,
+DFA and shift-reduce tables may not be particularly efficient.
+It is hard to know what works well and what does not without
+trying it out.  Some profiling and tuning of PyGgy and PyLly
+would be useful.
+
+Beyond the obvious, there are a few things on my wish list for
+making a better parsing system.  The first is to implement
+scannerless parsing.  Scannerless parsing has a number of
+advantages over parsing with a scanner (lexer).  PyGgy already
+has many of the mechanisms that would be needed.  The second
+is a mechanism for disambiguating parses during parsing.   Something
+as simple as a disambiguating function could go a long way here.
+
+
+\begin{seealso}
+The following references were influential in the design and implementation
+of this system.
+
+\seetitle[http://www.cs.vu.nl/\%7edick/PTAPG.html]{Parsing Techniques - A Practical Guide}{A general overview of parsing technologies.}
+
+\seetitle[http://www.cs.uu.nl/groups/ST/Visser/DisambiguationFiltersForScannerlessGeneralizedLRParsers]{Disambiguation Filters for Scannerless Generalized LR Parsers}{The precedence system used by PyGgy is based on this paper.}
+
+\seetitle[http://citeseer.ist.psu.edu/rekers92parser.html]{Parser Generation for Interactive Environments}{The GLR parser in PyGgy is based on the parsing algorithm developed in section 1.5.1 of this paper.}
+
+\seetitle[http://www.cs.uu.nl/groups/ST/Visser/ScannerlessGeneralizedLRParsing]{Scannerless Generalized-LR Parsing}{Building parsers without using lexers}
+
+\seetitle[http://research.microsoft.com/research/pubs/view.aspx?msr\_tr\_id=MSR-TR-2003-32]{A Research C\# Compiler}{This paper describes a GLR-based compiler written by Microsoft Research with some novel features.  Their use of functions to disambiguate a parse is interesting.}
+
+\seetitle[http://citeseer.ist.psu.edu/irwin01generated.html]{A Generated Parser of C++}{This paper describes a C++ parser built with a GLR parser.}
+
+\seeurl{http://systems.cs.uchicago.edu/ply/}{PLY is another parser generator for Python.  Some examples in this text are derived from their examples.}
+
+\seeurl{http://dparser.sourceforge.net/}{D-Parser is a GLR parser for C.  The ANSI-C example included with PyGgy is derived from a similar example for the D-Parser.}
+
+
+
+\end{seealso}
+

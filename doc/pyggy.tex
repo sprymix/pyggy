@@ -1,0 +1,63 @@
+\documentclass{manual}
+
+\title{PyGgy Manual}
+
+\input{boilerplate}
+
+\makeindex
+
+\begin{document}
+
+\release{0.4}
+\setshortversion{0.4}
+\author{Tim Newsham}
+\authoraddress{Email: \email{newsham@lava.net}}
+\date{October 15, 2004}
+\maketitle
+
+\ifhtml
+\chapter*{Front Matter\label{front}}
+\fi
+
+\begin{abstract}
+
+% XXX macro for PyGgy and PyLly ?
+
+\noindent
+PyGgy is a Python package for generating and executing lexers and
+parsers.  The package is complete enough to be used in its own
+construction.  PyGgy is in the public domain.
+
+\end{abstract}
+
+\tableofcontents
+
+\input{intro}
+	% version and maturity
+	% references to parsing intro
+	% features
+	% home page
+\input{quickstart}
+	% visualizer
+	% using pylly with other parsers
+\input{apiref}
+    % quick api
+    % errors
+    % pylly api
+    % lexer api
+    % pyggy api
+    % parser api
+\input{lexspec}
+	% spec file
+    % lexer api/calling convention
+\input{gramspec}
+	% spec file
+    % parser api/calling convention
+	% references to papers
+\input{future}
+	% wishlist
+    % actions during parsing
+    % disambiguation actions
+    % scannerless parsing
+
+\end{document}

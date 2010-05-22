@@ -1,0 +1,42 @@
+# -----------------------------------------------------------------------------
+# calc.pyl
+# -----------------------------------------------------------------------------
+
+code :
+	lineno = 1
+
+	def Tok(l, str) :
+		return str
+
+definitions :
+	NAME	"[[:alpha:]_][[:alnum:]_]*"
+	NUMBER	"[[:digit:]]+"
+
+INITIAL :
+	"\+" :	return Tok(self, "PLUS")
+	"-" :	return Tok(self, "MINUS")
+	"\*" :	return Tok(self, "TIMES")
+	"/" :	return Tok(self, "DIVIDE")
+	"=" :	return Tok(self, "EQUALS")
+	"\(" :	return Tok(self, "LPAREN")
+	"\)" :	return Tok(self, "RPAREN")
+
+	"{NAME}":	return Tok(self, "NAME")
+	"{NUMBER}":	
+		try :
+			self.value = int(self.value)
+		except ValueError :
+			print "Integer value too large", self.value
+			self.value = 0
+		return Tok(self, "NUMBER")
+
+	"[[:blank:]]" : return
+	"\n+" :
+		global lineno
+		lineno += len(self.value)
+		return
+
+	"." :
+		print "Illegal character '%s'" % self.value
+		return
+

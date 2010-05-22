@@ -1,0 +1,127 @@
+
+# Lexer for ansic.pyg.
+
+code :
+	fname = "default"
+	lineno = 1
+
+DEFAULT :
+	# Keyword tokens..
+	"!" :	return "!"
+	"!=" :	return "!="
+	"%" :	return "%"
+	"%=" :	return "%="
+	"&&" :	return "&&"
+	"&" :	return "&"
+	"&=" :	return "&="
+	"\(" :	return "("
+	"\)" :	return ")"
+	"\*" :	return "*"
+	"\*=" :	return "*="
+	"\+" :	return "+"
+	"\+\+" :	return "++"
+	"\+=" :	return "+="
+	"," :	return ","
+	"-" :	return "-"
+	"--" :	return "--"
+	"-=" :	return "-="
+	"->" :	return "->"
+	"\." :	return "."
+	"\.\.\." :	return "..."
+	"/" :	return "/"
+	"/=" :	return "/="
+	":" :	return ":"
+	";" :	return ";"
+	"<" :	return "<"
+	"<<" :	return "<<"
+	"<<=" :	return "<<="
+	"<=" :	return "<="
+	"=" :	return "="
+	"=" :	return "="
+	"==" :	return "=="
+	">" :	return ">"
+	">=" :	return ">="
+	">>" :	return ">>"
+	">>=" :	return ">>="
+	"\?" :	return "?"
+	"\[" :	return "["
+	"\]" :	return "]"
+	"\^" :	return "^"
+	"auto" :	return "auto"
+	"break" :	return "break"
+	"case" :	return "case"
+	"char" :	return "char"
+	"const" :	return "const"
+	"continue" :	return "continue"
+	"default" :	return "default"
+	"do" :	return "do"
+	"double" :	return "double"
+	"else" :	return "else"
+	"enum" :	return "enum"
+	"extern" :	return "extern"
+	"float" :	return "float"
+	"for" :	return "for"
+	"goto" :	return "goto"
+	"if" :	return "if"
+	"int" :	return "int"
+	"long" :	return "long"
+	"register" :	return "register"
+	"return" :	return "return"
+	"short" :	return "short"
+	"signed" :	return "signed"
+	"sizeof" :	return "sizeof"
+	"static" :	return "static"
+	"struct" :	return "struct"
+	"typedef" :	return "typedef"
+	"union" :	return "union"
+	"unsigned" :	return "unsigned"
+	"void" :	return "void"
+	"volatile" :	return "volatile"
+	"while" :	return "while"
+	"\{" :	return "{"
+	"\|" :	return "|"
+	"\|=" :	return "|="
+	"\|\|" :	return "||"
+	"\}" :	return "}"
+
+
+	# -----------
+	# non-keywords
+
+	# XXX this doesnt take into account character escapes characters
+	"'([^'])|(\\.)'" : 
+		# XXX translate escaped characters!
+		self.value = self.value[1:-1]
+		if self.value[0] == '\n' : # XXX does C allow this?
+			global lineno
+			lineno += 1
+		return "character"
+
+	# XXX this doesnt take into account character escapes in strings.
+	"\"[^\"\n]*\"" : 
+		# XXX we need to count the newlines in the string.
+		return "string"
+
+	# XXX our lexer isnt powerful enough to return integer/floats for
+	# the value!  This shoudld be fixed!
+	"[1-9][0-9]*[uUlL]?" : return "decimalint"
+	"(0x)|(0X)[0-9a-fA-F]+[uUlL]?" : return "hexint"
+	"0[0-7]*[uUlL]?" : return "octalint"
+	"([0-9]+.[0-9]*|[0-9]*.[0-9]+)([eE][\-\+]?[0-9]+)?[fFlL]?" : return "float"
+	"[0-9]+[eE][\-\+]?[0-9]+[fFlL]?" : return "float"
+	"[a-zA-Z_][a-zA-Z0-9_]*" : return "ident"
+
+
+	# ignored whitespace
+	"[[:blank:]]+" : return
+	"\n" :
+		global lineno
+		lineno += 1
+
+	# cpp line number/filename directives
+	"^# .*\n" :
+		global lineno, fname
+		vals = self.value[:-1].split(" ")
+		lineno = int(vals[1])
+		fname = vals[2][1:-1]
+

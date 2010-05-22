@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="prev" HREF="node25.html">
+<LINK REL="parent" HREF="node18.html">
+<LINK REL="next" HREF="node27.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="Grammar">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>4.8 Grammar</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="4.7 Action Code" 
+  HREF="node25.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="4. The PyLly spec" 
+  HREF="node18.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="5. The PyGgy spec" 
+  HREF="node27.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node25.html">4.7 Action Code</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node18.html">4. The PyLly spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node27.html">5. The PyGgy spec</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION006800000000000000000">
+4.8 Grammar</A>
+</H1>
+<dl><dd class="grammar">
+<div class="productions">
+<table cellpadding="2">
+
+  <tr valign="baseline">
+    <td><code><a name="tok-spec">spec</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>sect spec</code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-spec">spec</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>sect</code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-sect">sect</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><definitions>">definitions</a> <a href="<pyGrammarToken><pylly><INDENT>">INDENT</a> deflist <a href="<pyGrammarToken><pylly><DEDENT>">DEDENT</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-sect">sect</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><SRCCODE>">SRCCODE</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-sect">sect</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>statelist <a href="<pyGrammarToken><pylly><INDENT>">INDENT</a> rulelist <a href="<pyGrammarToken><pylly><DEDENT>">DEDENT</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-statelist">statelist</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><IDENT>">IDENT</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-statelist">statelist</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>statelist <a href="<pyGrammarToken><pylly><,>">,</a> <a href="<pyGrammarToken><pylly><IDENT>">IDENT</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-deflist">deflist</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><IDENT>">IDENT</a> <a href="<pyGrammarToken><pylly><&#168;>">&#168;</a> regexp <a href="<pyGrammarToken><pylly><&#168;>">&#168;</a> <a href="<pyGrammarToken><pylly><&#92;n>">&#92;n</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-deflist">deflist</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>deflist <a href="<pyGrammarToken><pylly><IDENT>">IDENT</a> <a href="<pyGrammarToken><pylly><&#168;>">&#168;</a> regexp <a href="<pyGrammarToken><pylly><&#168;>">&#168;</a> <a href="<pyGrammarToken><pylly><EOL>">EOL</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-rulelist">rulelist</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><&#168;>">&#168;</a> rulepat <a href="<pyGrammarToken><pylly><&#168;>">&#168;</a> <a href="<pyGrammarToken><pylly><SRCCODE>">SRCCODE</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-rulelist">rulelist</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>rulelist <a href="<pyGrammarToken><pylly><&#168;>">&#168;</a> rulepat <a href="<pyGrammarToken><pylly><&#168;>">&#168;</a> <a href="<pyGrammarToken><pylly><SRCCODE>">SRCCODE</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-rulepat">rulepat</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>optanchor regexp</code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-rulepat">rulepat</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><&lt;&lt;EOF&gt;&gt;>">&lt;&lt;EOF&gt;&gt;</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-optanchor">optanchor</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><^>">^</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-optanchor">optanchor</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    </tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-regexp">regexp</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>reclause</code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-regexp">regexp</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>regexp reclause</code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-reclause">reclause</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>reclause <a href="<pyGrammarToken><pylly><+>">+</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-reclause">reclause</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>reclause <a href="<pyGrammarToken><pylly><*>">*</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-reclause">reclause</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>reclause <a href="<pyGrammarToken><pylly><?>">?</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-reclause">reclause</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>reclause <a href="<pyGrammarToken><pylly><|>">|</a> reclause</code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-reclause">reclause</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><(>">(</a> regexp <a href="<pyGrammarToken><pylly><)>">)</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-reclause">reclause</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><IDENT>">IDENT</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-reclause">reclause</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>cclass</code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-reclause">reclause</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><CHAR>">CHAR</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-reclause">reclause</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><.>">.</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-cclass">cclass</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><[>">[</a> optinvert ranges <a href="<pyGrammarToken><pylly><]>">]</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-optinvert">optinvert</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><^>">^</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-optinvert">optinvert</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    </tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-ranges">ranges</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>range</code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-ranges">ranges</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>ranges range</code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-range">range</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><CHAR>">CHAR</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-range">range</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><CHAR>">CHAR</a> <a href="<pyGrammarToken><pylly><-->">-</a> <a href="<pyGrammarToken><pylly><CHAR>">CHAR</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-range">range</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><[:alnum:]>">[:alnum:]</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-range">range</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><[:alpha:]>">[:alpha:]</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-range">range</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><[:blank:]>">[:blank:]</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-range">range</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><[:cntrl:]>">[:cntrl:]</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-range">range</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><[:digit:]>">[:digit:]</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-range">range</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><[:graph:]>">[:graph:]</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-range">range</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><[:lower:]>">[:lower:]</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-range">range</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><[:print:]>">[:print:]</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-range">range</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><[:punct:]>">[:punct:]</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-range">range</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><[:space:]>">[:space:]</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-range">range</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><[:upper:]>">[:upper:]</a></code></td></tr>
+  <tr valign="baseline">
+    <td><code><a name="tok-range">range</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code><a href="<pyGrammarToken><pylly><[:xdigit:]>">[:xdigit:]</a></code></td></tr>
+</table>
+</div>
+<a class="grammar-footer"
+  href="grammar-pylly.txt" type="text/plain"
+  >Download entire grammar as text.</a>
+</dd></dl>
+	
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="4.7 Action Code" 
+  rel="prev" title="4.7 Action Code" 
+  HREF="node25.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="4. The PyLly spec" 
+  rel="parent" title="4. The PyLly spec" 
+  HREF="node18.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="5. The PyGgy spec" 
+  rel="next" title="5. The PyGgy spec" 
+  HREF="node27.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node25.html">4.7 Action Code</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node18.html">4. The PyLly spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node27.html">5. The PyGgy spec</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

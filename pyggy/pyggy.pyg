@@ -1,0 +1,227 @@
+#
+# pyggy_gram.pyg
+#	Specification of the grammar for a pyg file.
+#
+
+code :
+	from errors import *
+	
+	# data collected when processing the parse.  
+	globcode = ""
+	gram = []							# list of lhs,rhs
+	actions = []						# list of funcs idxs
+	preclist = []						# ordered list of precedences
+	preflist = []						# ordered list of prefs
+	leftlist = []						# ordered list of left assocs
+	rightlist = []						# ordered list of right assocs
+	nonassoclist = []					# ordered list of nonassocs
+	tagged = dict()						# maps tag name to list of tagged prods
+	rellist = []						# list of prec relattionships
+	funcs = ["return kids"]				# list of action functions
+	internalcnt = 0						# counter for internal names
+	start = None						# start symbol
+
+	# this should probably be a parameter
+	useleft = 1 						# use left recursion in internal rules
+
+	# XXX in the future it would be nice to have a hash table lookup
+	# of all the funcs so that we can only add the functions that we
+	# need, but reuse any functions that are identical.  especially
+	# for the internal functions (default, list building, optional, etc).
+	# for now we just hard wire in the default rule and dont worry
+	# about duplicate code for the rest.
+	
+	# helpers
+	class RhsEl :
+		def __init__(self, el, type=None) :
+			self.el = el
+			self.type = type
+	class Rhs :
+		def __init__(self, prec, ellist, code) :
+			self.prec = prec
+			self.ellist = ellist
+			self.code = code
+
+	def get_intname(name, type) :
+		global internalcnt
+		internalcnt += 1
+		return "%s.%s%d" % (name, type, internalcnt)
+	
+	def addprod(lhs, prec, rhs, code) :
+		"Add a new production to the grammar"
+		prodno = len(gram)
+		gram.append((lhs,rhs),)
+
+		# add the action code
+		actidx = 0
+		if code is not None :
+			actidx = len(funcs)
+			funcs.append(code)
+		actions.append(actidx)
+
+		# add the precedence
+		if prec :
+			if not prec in tagged :
+				tagged[prec] = []
+			if not prodno in tagged[prec] :
+				tagged[prec].append(prodno)
+
+	def procrhsel(lhs, el) :
+		"return the rhs element, possibly creating internal productions."
+		if el.type == '*' :
+			# clos -> nothing | clos el
+			nel = procrhsel(lhs, el.el)
+			nlhs = get_intname(lhs, "clos")
+			if useleft :
+				addprod(nlhs, None, [], "return []")
+				addprod(nlhs, None, [nlhs, nel], "kids[0].append(kids[1])\nreturn kids[0]")
+			else :
+				addprod(nlhs, None, [], "return []")
+				addprod(nlhs, None, [nel, nlhs], "kids[1][0:0] = kids[0]\nreturn kids[1]")
+			return nlhs
+		elif el.type == '+' :
+			# clos -> el| clos el
+			nel = procrhsel(lhs, el.el)
+			nlhs = get_intname(lhs, "posclos")
+			if useleft :
+				addprod(nlhs, None, [nel], "return [kids[0]]")
+				addprod(nlhs, None, [nlhs, nel], "kids[0].append(kids[1])\nreturn kids[0]")
+			else :
+				addprod(nlhs, None, [nel], "return [kids[0]]")
+				addprod(nlhs, None, [nel, nlhs], "kids[1][0:0] = kids[0]\nreturn kids[0]")
+			return nlhs
+		elif el.type == '?' :
+			# opt = none | el
+			nel = procrhsel(lhs, el.el)
+			nlhs = get_intname(lhs, "opt")
+			addprod(nlhs, None, [], "return")
+			addprod(nlhs, None, [nel], "return kids[0]")
+			return nlhs
+		elif el.type == 'list' :
+			return procrhslist(get_intname(lhs, "list"), el.el)
+		elif el.type is None :
+			return el.el
+		else :
+			raise InternalError("cant happen")
+
+	def procrhslist(lhs, rhslist) :
+		"add productions for each lhs->rhs in rhslist"
+		for rhs in rhslist :
+			l = []
+			for el in rhs.ellist :
+				l.append(procrhsel(lhs, el))
+			addprod(lhs, rhs.prec, l, rhs.code)
+		return lhs
+
+
+gram -> line
+	| line gram
+	; 
+
+line -> precoper idlist TOK_END :
+		prec = kids[0]
+		for id in kids[1] :
+			if prec == "%left" :
+				leftlist.append(id)
+				preclist.append(id)
+			elif prec == "%right" :
+				rightlist.append(id)
+				preclist.append(id)
+			elif prec == "%nonassoc" :
+				nonassoclist.append(id)
+				preclist.append(id)
+			elif prec == "%gt" :
+				preclist.append(id)
+			elif prec == "%pref" :
+				preflist.append(id)
+			else :
+				raise InternalError("cant happen")
+	| TOK_REL TOK_ID precoper TOK_ID TOK_END :
+		prec = kids[2]
+		if prec == "%left" :
+			name = "left"
+		elif prec == "%right" :
+			name = "right"
+		elif prec == "%nonassoc" :
+			name = "nonassoc"
+		elif prec == "%gt" :
+			name = "gt"
+		elif prec == "%pref" :
+			name = "pref"
+		else :
+			raise InternalError("cant happen")
+		rellist.append((kids[1],name,kids[3]),)
+	| TOK_ID TOK_DERIVES rhslist TOK_END :
+		# process the AST's we built up for the RHS's
+		global start
+		sym = procrhslist(kids[0], kids[2])
+		if start is None :
+			start = sym
+	| TOK_CODE TOK_SRCCODE :
+		global globcode
+		globcode += kids[1]
+	;
+
+precoper -> TOK_LEFT :
+		return kids[0]
+	| TOK_RIGHT :
+		return kids[0]
+	| TOK_NONASSOC :
+		return kids[0]
+	| TOK_PREF :
+		return kids[0]
+	| TOK_GT :
+		return kids[0]
+	;
+
+# return a list of Rhs's
+rhslist -> optprec rhsellist optcode :
+		return [Rhs(*kids)]
+	| rhslist TOK_ALT optprec rhsellist optcode :
+		kids[0].append(Rhs(*kids[2:]))
+		return kids[0]
+	;
+
+optcode -> TOK_SRCCODE :
+		return kids[0]
+	| :
+		return
+	;
+
+# return a list of RhsEl's
+rhsellist -> rhsellist rhsel :
+		kids[0].append(kids[1])
+		return kids[0]
+	| :
+		return []
+	;
+
+# elements in the right hand side, with EBNF operators
+# return a RhsEl, later we process these top-down (we do this
+# so we can give the internal productions reasonable names based
+# on the lhs name)
+rhsel -> TOK_ID :
+		return RhsEl(kids[0])
+	| TOK_OPAREN rhslist TOK_CPAREN :
+		return RhsEl(kids[1], 'list')
+	| rhsel TOK_STAR :
+		return RhsEl(kids[0], '*')
+	| rhsel TOK_PLUS :
+		return RhsEl(kids[0], '+')
+	| rhsel TOK_OPTIONAL :
+		return RhsEl(kids[0], '?')
+	;
+
+idlist -> idlist TOK_ID :
+		kids[0].append(kids[1])
+		return kids[0]
+	| :
+		return []
+	;
+
+optprec -> TOK_PREC TOK_OPAREN TOK_ID TOK_CPAREN :
+		return kids[2]
+	| :
+		return None
+	;
+

@@ -1,0 +1,11 @@
+
+# lexer for test3.pyg
+INITIAL :
+	"if" : return "IF"
+	"then" : return "THEN"
+	"else" : return "ELSE"
+	"s" : return "s"
+	"e" : return "e"
+	"[ \n]" : return  # ignore newlines and spaces
+	"." : print "skipping unknown letter", self.tokdata[0]
+

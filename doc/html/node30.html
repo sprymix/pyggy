@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="next" HREF="node31.html">
+<LINK REL="prev" HREF="node29.html">
+<LINK REL="parent" HREF="node27.html">
+<LINK REL="next" HREF="node31.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="Action Code">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>5.3 Action Code</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="5.2 Precedence rules" 
+  HREF="node29.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="5. The PyGgy spec" 
+  HREF="node27.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="5.4 EBNF" 
+  HREF="node31.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node29.html">5.2 Precedence rules</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node27.html">5. The PyGgy spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node31.html">5.4 EBNF</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION007300000000000000000">
+5.3 Action Code</A>
+</H1>
+Each production can have action code associated with it.  Action code
+is specified with a colon followed by a line of code or an indented
+block of code.
+
+<P>
+Actions associated with productions are not performed during parsing.
+Rather these functions can be called during a post-processing pass of
+the parse tree with the <code>proctree</code> function.  
+
+<P>
+The action code
+is called with one argument named <code>kids</code> which is a list of
+right hand side elements.  The value returned by the action code is
+associated with the production it belongs to.  When the production
+is used in the right hand side of another production in the parse
+tree, its value will be passed in as an elements of the <code>kids</code>
+argument for that production's action code.
+See the API reference for more details.
+
+<P>
+If action code is not specified for a production, the default
+action is used.  This action is simply <code>return kids</code>, which
+returns a list of the right hand side elements of the derivation.
+Some productions in the grammar are generated internally and have
+their own actions associated with them, as will be seen in the next
+section.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="5.2 Precedence rules" 
+  rel="prev" title="5.2 Precedence rules" 
+  HREF="node29.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="5. The PyGgy spec" 
+  rel="parent" title="5. The PyGgy spec" 
+  HREF="node27.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="5.4 EBNF" 
+  rel="next" title="5.4 EBNF" 
+  HREF="node31.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node29.html">5.2 Precedence rules</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node27.html">5. The PyGgy spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node31.html">5.4 EBNF</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

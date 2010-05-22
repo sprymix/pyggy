@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="next" HREF="node21.html">
+<LINK REL="prev" HREF="node19.html">
+<LINK REL="parent" HREF="node18.html">
+<LINK REL="next" HREF="node21.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="The Definition section">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>4.2 The Definition section</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="4.1 The Code section" 
+  HREF="node19.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="4. The PyLly spec" 
+  HREF="node18.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="4.3 Starting States" 
+  HREF="node21.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node19.html">4.1 The Code section</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node18.html">4. The PyLly spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node21.html">4.3 Starting States</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION006200000000000000000">
+4.2 The Definition section</A>
+</H1>
+The second type of secion type is the <code>definitions</code> section.  It provides
+a convenient way to define often-used patterns.  It is started with
+the word <code>definitions</code> followed by a colon and a newline.  Each line
+in the definitions file specifies a pattern name and a pattern seperated
+by an arbitrary number of spaces.  Patterns are always regular expressions 
+enclosed in quotes in PyLly [Regular expressions will be discussed
+more fully later].  For example:
+
+<P>
+<div class="verbatim"><pre>
+definitions:
+    ID      "[A-Za-z_][A-Za-z0-9_]*"
+    IDPAIR  "{ID} {ID}"
+</pre></div>
+
+<P>
+This example defines the pattern named <code>ID</code> as a letter or underscore
+followed by zero or more letters, numbers or underscores.  This pattern
+can be used latter in other regular expressions by enclosing them in
+braces as illustrated in the definition of <code>IDPAIR</code> as two identifiers
+seperated by a space.  All named patterns are self contained; there
+is never a need to enclose a named pattern within parenthesis to avoid
+unusual effects.
+
+<P>
+There may be multiple definitions sections within the spec file.  Definitions
+may be used in any patterns following the definition.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="4.1 The Code section" 
+  rel="prev" title="4.1 The Code section" 
+  HREF="node19.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="4. The PyLly spec" 
+  rel="parent" title="4. The PyLly spec" 
+  HREF="node18.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="4.3 Starting States" 
+  rel="next" title="4.3 Starting States" 
+  HREF="node21.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node19.html">4.1 The Code section</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node18.html">4. The PyLly spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node21.html">4.3 Starting States</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

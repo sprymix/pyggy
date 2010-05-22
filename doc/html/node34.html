@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="next" href="about.html">
+<LINK REL="prev" HREF="node27.html">
+<LINK REL="parent" HREF="pyggy.html">
+<LINK REL="next" href="about.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT=". Future Directions">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>6. Future Directions</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="5.6 Grammar" 
+  HREF="node33.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="PyGgy Manual" 
+  HREF="pyggy.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="About this document ..." 
+  href="about.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node33.html">5.6 Grammar</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="pyggy.html">PyGgy Manual</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="about.html">About this document ...</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION008000000000000000000">
+6. Future Directions</A>
+</H1>
+
+<P>
+There's a lot left to be done.  This package is still young and
+needs to be put through its paces.  There are still a number of
+opportunities for improvement in the current implementation.
+The grammars for the parser and lexer spec files are old and
+do not yet make use of some of the newer features in PyGgy such
+as the EBNF constructs.  The semantic actions of the parser are
+performed in a post pass.  It might be possible to execute
+these actions earlier during parsing and reduce the memory
+requirements.  The internal representations used for the NFA,
+DFA and shift-reduce tables may not be particularly efficient.
+It is hard to know what works well and what does not without
+trying it out.  Some profiling and tuning of PyGgy and PyLly
+would be useful.
+
+<P>
+Beyond the obvious, there are a few things on my wish list for
+making a better parsing system.  The first is to implement
+scannerless parsing.  Scannerless parsing has a number of
+advantages over parsing with a scanner (lexer).  PyGgy already
+has many of the mechanisms that would be needed.  The second
+is a mechanism for disambiguating parses during parsing.   Something
+as simple as a disambiguating function could go a long way here.
+
+<P>
+<div class="seealso">
+  <p class="heading"><b>See Also:</b></p>
+
+The following references were influential in the design and implementation
+of this system.
+
+<P>
+<dl compact class="seetitle">
+    <dt><em class="citetitle"><a href="http://www.cs.vu.nl/%7edick/PTAPG.html"
+        >Parsing Techniques - A Practical Guide</a></em>
+    <dd>A general overview of parsing technologies.
+  </dl>
+
+<P>
+<dl compact class="seetitle">
+    <dt><em class="citetitle"><a href="http://www.cs.uu.nl/groups/ST/Visser/DisambiguationFiltersForScannerlessGeneralizedLRParsers"
+        >Disambiguation Filters for Scannerless Generalized LR Parsers</a></em>
+    <dd>The precedence system used by PyGgy is based on this paper.
+  </dl>
+
+<P>
+<dl compact class="seetitle">
+    <dt><em class="citetitle"><a href="http://citeseer.ist.psu.edu/rekers92parser.html"
+        >Parser Generation for Interactive Environments</a></em>
+    <dd>The GLR parser in PyGgy is based on the parsing algorithm developed in section 1.5.1 of this paper.
+  </dl>
+
+<P>
+<dl compact class="seetitle">
+    <dt><em class="citetitle"><a href="http://www.cs.uu.nl/groups/ST/Visser/ScannerlessGeneralizedLRParsing"
+        >Scannerless Generalized-LR Parsing</a></em>
+    <dd>Building parsers without using lexers
+  </dl>
+
+<P>
+<dl compact class="seetitle">
+    <dt><em class="citetitle"><a href="http://research.microsoft.com/research/pubs/view.aspx?msr_tr_id=MSR-TR-2003-32"
+        >A Research C# Compiler</a></em>
+    <dd>This paper describes a GLR-based compiler written by Microsoft Research with some novel features.  Their use of functions to disambiguate a parse is interesting.
+  </dl>
+
+<P>
+<dl compact class="seetitle">
+    <dt><em class="citetitle"><a href="http://citeseer.ist.psu.edu/irwin01generated.html"
+        >A Generated Parser of C++</a></em>
+    <dd>This paper describes a C++ parser built with a GLR parser.
+  </dl>
+
+<P>
+<dl compact class="seeurl">
+    <dt><a href="http://systems.cs.uchicago.edu/ply/"
+        class="url">http://systems.cs.uchicago.edu/ply/</a>
+    <dd>PLY is another parser generator for Python.  Some examples in this text are derived from their examples.
+  </dl>
+
+<P>
+<dl compact class="seeurl">
+    <dt><a href="http://dparser.sourceforge.net/"
+        class="url">http://dparser.sourceforge.net/</a>
+    <dd>D-Parser is a GLR parser for C.  The ANSI-C example included with PyGgy is derived from a similar example for the D-Parser.
+  </dl>
+
+<P>
+</div>
+	
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="5.6 Grammar" 
+  rel="prev" title="5.6 Grammar" 
+  HREF="node33.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="PyGgy Manual" 
+  rel="parent" title="PyGgy Manual" 
+  HREF="pyggy.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="About this document ..." 
+  rel="next" title="About this document ..." 
+  href="about.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node33.html">5.6 Grammar</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="pyggy.html">PyGgy Manual</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="about.html">About this document ...</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

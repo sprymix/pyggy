@@ -1,0 +1,35 @@
+
+code :
+	names = {}
+
+%left TIMES DIVIDE;
+%left PLUS;
+%right UNARYMINUS;
+
+statement -> NAME EQUALS expression :
+		names[kids[0]] = kids[2]
+	| expression :
+		print kids[0]
+	;
+
+expression -> expression PLUS expression :
+		return kids[0] + kids[2]
+	| %prec(PLUS) expression MINUS expression :
+		return kids[0] - kids[2]
+	| expression TIMES expression :
+		return kids[0] * kids[2]
+	| expression DIVIDE expression :
+		return kids[0] / kids[2]
+	| %prec(UNARYMINUS) MINUS expression :
+		return -kids[1]
+	| LPAREN expression RPAREN :
+		return kids[1]
+	| NUMBER :
+		return kids[0]
+	| NAME :
+		if not kids[0] in names :
+			print "Undefined name '%s'" % kids[0]
+			return 0
+		return names[kids[0]]
+	;
+

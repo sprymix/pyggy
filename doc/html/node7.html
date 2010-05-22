@@ -1,0 +1,327 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="next" HREF="node8.html">
+<LINK REL="prev" HREF="node6.html">
+<LINK REL="parent" HREF="node4.html">
+<LINK REL="next" HREF="node8.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="Using PyGgy">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>2.3 Using PyGgy</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="2.2 Using PyLly" 
+  HREF="node6.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="2. Quick Start" 
+  HREF="node4.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="2.4 Visualization" 
+  HREF="node8.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node6.html">2.2 Using PyLly</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node4.html">2. Quick Start</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node8.html">2.4 Visualization</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION004300000000000000000">
+2.3 Using PyGgy</A>
+</H1>
+
+<P>
+PyGgy reads in a specification file for a parser and generates
+tables that can be used by a parsing engine to parse a stream of
+tokens.  The first step in using PyGgy is to construct a specification
+file which specifies the grammar to be parsed.  An example of a simple
+spec file is given in <span class="file">examples/test2.pyg</span> (see <span class="file">examples/test2.pyl</span>
+for the lexer that goes along with it):
+
+<P>
+<div class="verbatim"><pre>
+# This grammar is ambiguous
+E -&gt; E PLUS E
+    | E TIMES E
+    | ID
+    ;
+</pre></div>
+
+<P>
+This specifies a grammar with one non-terminal (<code>E</code>) with three
+productions (<code>E -&gt; E PLUS E</code>, <code>E -&gt; E TIMES E</code> and <code>E -&gt; ID</code>) 
+and three terminals (tokens <code>PLUS</code>, <code>TIMES</code> and <code>ID</code>).
+
+<P>
+Building a parser from a specification file is similar to building
+a lexer from a PyLly specification file.  The example in
+<span class="file">example/test2.py</span> illustrates this:
+
+<P>
+<div class="verbatim"><pre>
+import pyggy
+
+[...]
+
+# instantiate the lexer and parser
+l,ltab = pyggy.getlexer("test2.pyl")
+p,ptab = pyggy.getparser("test2.pyg")
+l.setinput("-")
+p.setlexer(l)
+
+# parse the input
+tree = p.parse()
+if tree == None :
+    print "error!"
+else :
+    print "parse done: ", exprstr(tree)
+    # if you have dot, try uncommenting the following
+    #pyggy.glr.dottree(tree)
+</pre></div>
+
+<P>
+The <code>getparser</code> function builds parser tables and a parser
+in a similar manner as the <code>getlexer</code> method previously
+discussed.  It returns both the parser and the generated module
+containing the parser tables.  Once the parser is specified, its
+input source is specified with the <code>setlexer</code> method.   Finally
+the <code>parse</code> method is called to parse the token stream from
+the lexer.
+
+<P>
+The <code>parse</code> method parses the tokens from the lexer and returns 
+a parse tree.  The tree has a slightly different shape than might be expected
+because the parse engine can
+parse ambiguous grammars.  The root of the tree is a
+<code>pyggy.glr.symbolnode</code> instance.  This instance refers to one of the
+terminals or non-terminals in the grammar.  It has a list
+of the possible productions that are derived by that symbol in
+the <code>possibilities</code> member.  If the parse in unambiguous, there
+will be exactly one item in the <code>possibilities</code> list.
+Each possibility is a <code>pyggy.glr.rulenode</code> instance.  The <code>rulenode</code>
+instance represents the left hand side of a production and has
+members <code>rule</code> specifying which rule was matched and <code>elements</code>
+which is a list of all of the parsed items in the right hand side.  These
+elements are <code>symbolnode</code> instances.
+
+<P>
+To clarify, consider the code from <span class="file">examples/test2.py</span>:
+
+<P>
+<div class="verbatim"><pre>
+def singleexprstr(kids) :
+    if len(kids) == 1 :
+        return kids[0].sym[1]
+    else :
+        return "(%s %s %s)" % (exprstr(kids[0]), kids[1].sym[1], exprstr(kids[2]))
+
+def exprstr(e) :
+    res = []
+    for p in e.possibilities :
+        res.append(singleexprstr(p.elements))
+    if len(res) == 1 :
+        return res[0]
+    else :
+        return "[" + string.join(res, " or ") + "]"
+</pre></div>
+
+<P>
+The <code>exprstr</code> function is called to convert a parsed expression tree
+into a string.  The <code>exprstr</code> function is called with a <code>symnode</code> that
+always references the non-terminal <code>"E"</code>.
+Exprstr converts each of
+the possible parses of <code>"E"</code> into a string by calling <code>singleexprstr</code>.
+For each of the possible <code>rulenodes</code>, it calls the <code>singleexprstr</code>
+function with a list of the right hand side elements.  The <code>singleexprstr</code>
+function converts this right hand side list into a string.  If there
+is only one item in the right hand side, it must be an identifier, and
+the identifiers value is retrieved from the symbol information.  Otherwise
+there are three children, two expressions and an operator.  The expressions
+are converted to strings and joined into a single string with the operator
+between them.
+
+<P>
+Its informative to see what the output of this function looks like:
+
+<P>
+<div class="verbatim"><pre>
+$ echo "a+b*c" | python run2.py
+parse done:  [((a + b) * c) or (a + (b * c))]
+</pre></div>
+
+<P>
+Notice that there were two possible parses of this string.  If you
+have GraphViz installed, edit the <span class="file">examples/test2.py</span> example and 
+uncomment 
+the line <code>pyggy.glr.dottree(tree)</code> and rerun the previous test case.
+You will be shown a graphical representation of the parse tree.
+In the graph, the <code>symnodes</code> show up in red and the <code>rulenodes</code> show
+up in black.  You can also see the value of the symbol in the <code>symnode</code>
+and the rule in the <code>rulenode</code>.  Notice that the <code>symnode</code> for each
+non-terminal has a <code>sym</code> value of the non-terminal name and each terminal
+has a <code>sym</code> value that is a tuple of the token name and the token
+value.  Also note that the each <code>rulenode</code> has a rule that is a tuple
+of the name of the left hand side, the number of elements in the right
+hand side (which is also the number of items in its <code>elements</code> variable)
+and the index of the production in the grammar.
+
+<P>
+The graphical view of the parse <EM>tree</EM> makes it obvious that its
+not a parse <EM>tree</EM> at all!  The parsing engine
+makes use of shared nodes whenever possible to avoid an exponential
+blowup in the number of nodes during an ambiguous parse.  The
+parse <EM>tree</EM> will truely be a tree if there is a unique parse.  The 
+parse <EM>tree</EM> may have cycles if there is a production which can 
+derive itself without consuming any input.  If there are no such 
+productions, there will be no cycles.
+
+<P>
+Like the lexer specification file, the grammar specification file can
+be used to specify actions to be performed.  These actions are not performed
+during parsing, as is traditionally done, but can be invoked after the
+parse is complete.  The <span class="file">example/pyg_calc.py</span> example illustrates
+this.  This is a small calculator test case based on the example
+from the PLY web site 
+(<em class="citetitle"><a
+ href="http://systems.cs.uchicago.edu/ply/example.html"
+ title="http://systems.cs.uchicago.edu/ply/example.html"
+ >http://systems.cs.uchicago.edu/ply/example.html</a></em>).
+The <span class="file">example/pyg_calc.pyg</span>
+file specifies the grammar and actions:
+
+<P>
+<div class="verbatim"><pre>
+%left TIMES DIVIDE;
+%left PLUS;
+%right UNARYMINUS;
+
+statement -&gt; NAME EQUALS expression :
+        names[kids[0]] = kids[2]
+    | expression :
+        print kids[0]
+    ;
+
+expression -&gt; expression PLUS expression :
+        return kids[0] + kids[2]
+    | %prec(PLUS) expression MINUS expression :
+        return kids[0] - kids[2]
+    | expression TIMES expression :
+        return kids[0] * kids[2]
+    | expression DIVIDE expression :
+        return kids[0] / kids[2]
+    | %prec(UNARYMINUS) MINUS expression :
+        return -kids[1]
+    | LPAREN expression RPAREN :
+        return kids[1]
+    | NUMBER :
+        return kids[0]
+    | NAME :
+        if not kids[0] in names :
+                print "Undefined name '%s'" % kids[0]
+            return 0
+        return names[kids[0]]
+    ;
+</pre></div>
+
+<P>
+Each production in the grammar specifies a block of code following
+the final colon.  After the input is parsed into a parse tree
+the actions can be applied to the parse tree with the <code>proctree</code>
+function as is done in <span class="file">examples/pyg_cal.py</span>:
+
+<P>
+<div class="verbatim"><pre>
+import sys
+import pyggy
+
+# build the lexer and parser
+l,ltab = pyggy.getlexer("pyg_calc.pyl")
+p,ptab = pyggy.getparser("pyg_calc.pyg")
+p.setlexer(l)
+
+while 1:
+    sys.stdout.write("calc &gt; ")
+    line = sys.stdin.readline()
+    if line == "" :
+        break
+
+    l.setinputstr(line)
+    try :
+        tree = p.parse()
+    except pyggy.ParseError,e :
+        print "parse error at '%s'" % e.str
+        continue
+    pyggy.proctree(tree, ptab)
+</pre></div>
+
+<P>
+<code>proctree</code> walks the tree in a depth-first manner and
+at each node representing a production in the grammar, runs
+the action associated with that production.  When running the
+code the <code>kids</code> argument contains a list of the right
+hand side values of the production.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="2.2 Using PyLly" 
+  rel="prev" title="2.2 Using PyLly" 
+  HREF="node6.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="2. Quick Start" 
+  rel="parent" title="2. Quick Start" 
+  HREF="node4.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="2.4 Visualization" 
+  rel="next" title="2.4 Visualization" 
+  HREF="node8.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node6.html">2.2 Using PyLly</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node4.html">2. Quick Start</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node8.html">2.4 Visualization</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

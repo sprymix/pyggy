@@ -1,0 +1,283 @@
+#
+# scanner.pyl
+#	Specification of how to tokenize a pyl file.
+#
+# Ugh.. this is a GREAT example of why we should be using scannerless parsers!
+# We must use several lexer states to lex tokens one way sometimes and other
+# ways at other times.
+# 
+
+definitions :
+	WS			"[[:blank:]]+"
+	NOTWS		"[^[:blank:]\n]+"
+	NAME		"[[:alpha:]_][[:alnum:]_]*"
+	DEFNAME		"\{{NAME}\}"
+	COMMENT		"#[^\n]*"
+
+code :
+	import string
+	from errors import *
+
+	lineno = 1				# current line
+	tabstop = 8				# tab is 8 spaces
+	curindent = [0]
+	codedata = ""
+
+	def error(l, str) :
+		global lineno
+		raise SpecError("%d near '%s': %s" % (lineno, l.value, str))
+
+	# return the indentation level of a string of spaces and tabs
+	def indentlevel(str) :
+		col = 0
+		for ch in str :
+			if ch == '\t' :
+				col = (1 + col / tabstop) * tabstop
+			else :
+				col += 1
+		return col
+
+	# Enter a new indentation level.
+	def indent(l, enterstate) :
+		curindent.append(-1)
+		l.PUSHSTATE(enterstate)
+
+	# leave the current indentation level
+	def unindent(l) :
+		l.POPSTATE()
+		curindent[-1:] = []
+
+	# Keep track of the current indent level and check to see if 
+	# we're unindenting.  If allowindent is true, then allow nested
+	# indentation, otherwise throw an error if it occurs.
+	# If unindentation occurs, call unindent and return true.
+	def checkindent(l, str, allowindent) :
+		cnt = indentlevel(str)
+		if curindent[-1] == -1 :
+			curindent[-1] = cnt
+		if cnt > curindent[-1] and not allowindent :
+			error(l, "illegal indentation")
+		if cnt < curindent[-1] :
+			unindent(l)
+			return 1
+		return 0
+
+	TOK_ALT = "TOK_ALT"
+	TOK_ANCHOR = "TOK_ANCHOR"
+	TOK_CBRACKET = "TOK_CBRACKET"
+	TOK_CCALNUM = "TOK_CCALNUM"
+	TOK_CCALPHA = "TOK_CCALPHA"
+	TOK_CCBLANK = "TOK_CCBLANK"
+	TOK_CCCNTRL = "TOK_CCCNTRL"
+	TOK_CCDIGIT = "TOK_CCDIGIT"
+	TOK_CCGRAPH = "TOK_CCGRAPH"
+	TOK_CCLOWER = "TOK_CCLOWER"
+	TOK_CCPRINT = "TOK_CCPRINT"
+	TOK_CCPUNCT = "TOK_CCPUNCT"
+	TOK_CCSPACE = "TOK_CCSPACE"
+	TOK_CCUPPER = "TOK_CCUPPER"
+	TOK_CCXDIGIT = "TOK_CCXDIGIT"
+	TOK_CHAR = "TOK_CHAR"
+	TOK_COMMA = "TOK_COMMA"
+	TOK_CPAREN = "TOK_CPAREN"
+	TOK_DASH = "TOK_DASH"
+	TOK_DEDENT = "TOK_DEDENT"
+	TOK_DEFS = "TOK_DEFS"
+	TOK_EOL = "TOK_EOL"
+	TOK_EOFEOF = "TOK_EOFEOF"
+	TOK_IDENT = "TOK_IDENT"
+	TOK_INDENT = "TOK_INDENT"
+	TOK_INVERT = "TOK_INVERT"
+	TOK_OBRACKET = "TOK_OBRACKET"
+	TOK_OPAREN = "TOK_OPAREN"
+	TOK_OPTIONAL = "TOK_OPTIONAL"
+	TOK_POSCLOS = "TOK_POSCLOS"
+	TOK_QUOTE = "TOK_QUOTE"
+	TOK_SRCCODE = "TOK_SRCCODE"
+	TOK_STARCLOS = "TOK_STARCLOS"
+	TOK_STRING = "TOK_STRING"
+	TOK_WILDCARD = "TOK_WILDCARD"
+
+# top level of file.. 
+INITIAL :
+	# completely empty lines are ignored
+	"^{WS}?{COMMENT}?\n" : 
+		global lineno
+		lineno += 1
+
+	# colon starts an indented block
+	":{WS}?{COMMENT}?\n" : 
+		global lineno
+		lineno += 1
+		indent(self, INDENTED)
+		return TOK_INDENT
+
+# in an indented block
+INDENTED :
+	# completely empty lines are ignored
+	"^{WS}?{COMMENT}?\n" : 
+		global lineno
+		lineno += 1
+
+	# leading whitespace is checked for indentation level.
+	"^{WS}" : checkindent(self, self.value, 0)
+
+	# no leading whitespace is complete unindentation.
+	"^{NOTWS}[^\n]*\n" :
+		self.PUSHBACK(self.value)
+		unindent(self)
+		return TOK_DEDENT
+
+	# colon at end of line starts a code block
+	":{WS}?{COMMENT}?\n" : 
+		global codedata, lineno
+		lineno += 1
+		codedata = ""
+		indent(self, CODE)
+
+	# otherwise, colon till end of line is code
+	":[^\n]*\n" : 
+		global lineno
+		lineno += 1
+		self.value = self.value[1:]
+		while self.value[0] in string.whitespace :
+			self.value = self.value[1:]
+		return TOK_SRCCODE
+
+	"<<EOF>>" : 
+		self.POPSTATE()
+		return TOK_DEDENT
+
+# most normal tokens, as well as comment and whitespace handling
+# (other than indentation handling)
+INITIAL, INDENTED :
+	# ignore comments till end of line
+	"{COMMENT}\n" : 
+		global lineno
+		lineno += 1
+		return TOK_EOL
+
+	# ignore whitespace
+	"{WS}" : return
+
+	"\n" : 
+		global lineno
+		lineno += 1
+		return TOK_EOL
+	"code{WS}?:{WS}?{COMMENT}?\n" : 
+		global codedata, lineno
+		lineno += 1
+		codedata = ""
+		indent(self, CODE)
+	"definitions" : return TOK_DEFS
+	"," : return TOK_COMMA
+	"{NAME}" : return TOK_IDENT
+	"\"" : 
+		self.PUSHSTATE(QUOTEDREGEXP)
+		return TOK_QUOTE
+
+# in this state we're collecting everything until an unindent into 
+# a TOK_SRCCODE token.
+CODE :
+	# ignore totally blank lines
+	"^{WS}?{COMMENT}?\n" : 
+		global codedata, lineno
+		lineno += 1
+		codedata += self.value
+
+	# check indent level of leading spaces
+	"^{WS}" : 
+		global codedata, curindent
+		if checkindent(self, self.value, 1) :
+			self.value = codedata
+			return TOK_SRCCODE
+		else :
+			codedata += ' ' * (indentlevel(self.value) - curindent[-1])
+
+	# if no leading spaces, completely unindented
+	"^{NOTWS}[^\n]*\n" :
+		global codedata
+		self.PUSHBACK(self.value)
+		unindent(self)
+		self.value = codedata
+		return TOK_SRCCODE
+			
+	# for everything else, just add to our buffer
+	"{NOTWS}[^\n]*\n" :
+		global codedata, lineno
+		lineno += 1
+		codedata += self.value
+
+	"<<EOF>>" : 
+		unindent(self)
+		self.value = codedata
+		return TOK_SRCCODE
+
+# lex out indivudual characters, escaped characters and special
+# character classes until an end-quote is seen.  Balk if there are
+# any newlines.
+QUOTEDREGEXP :
+	"\"" : 
+		self.POPSTATE()
+		return TOK_QUOTE
+	"\[" : 
+		self.PUSHSTATE(CHARCLASS)
+		return TOK_OBRACKET
+	"\|" : return TOK_ALT
+	"\*" : return TOK_STARCLOS
+	"\+" : return TOK_POSCLOS
+	"\?" : return TOK_OPTIONAL
+	"\." : return TOK_WILDCARD
+	"\^" : return TOK_ANCHOR
+	"\(" : return TOK_OPAREN
+	"\)" : return TOK_CPAREN
+	"\{" : self.PUSHSTATE(REIDENT)
+	"\<<EOF>>" : return TOK_EOFEOF
+	"<<EOF>>" : 
+		self.POPSTATE()
+		return TOK_QUOTE
+
+# inside a regular expression character class
+CHARCLASS :
+	"\[:alnum:\]" : return TOK_CCALNUM
+	"\[:alpha:\]" : return TOK_CCALPHA
+	"\[:blank:\]" : return TOK_CCBLANK
+	"\[:cntrl:\]" : return TOK_CCCNTRL
+	"\[:digit:\]" : return TOK_CCDIGIT
+	"\[:graph:\]" : return TOK_CCGRAPH
+	"\[:lower:\]" : return TOK_CCLOWER
+	"\[:print:\]" : return TOK_CCPRINT
+	"\[:punct:\]" : return TOK_CCPUNCT
+	"\[:space:\]" : return TOK_CCSPACE
+	"\[:upper:\]" : return TOK_CCUPPER
+	"\[:xdigit:\]" : return TOK_CCXDIGIT
+	"\^" : return TOK_INVERT
+	"\-" : return TOK_DASH
+	"\]" :
+		self.POPSTATE()
+		return TOK_CBRACKET
+	"<<EOF>>" : error(self, "EOF while reading character class")
+	
+
+QUOTEDREGEXP, CHARCLASS :
+	# escaped character
+	"\\[^\n]" : 
+		if self.value[1] == 'n' :
+			self.value = '\n'
+		elif self.value[1] == 't' :
+			self.value = '\t'
+		elif self.value[1] == 'r' :
+			self.value = '\r'
+		elif self.value[1] == '0' :
+			self.value = '\0'
+		else :
+			self.value = self.value[1:]
+		return TOK_CHAR
+	"." : return TOK_CHAR
+
+# we're parsing an identifier in a regular expression between {}'s
+REIDENT :
+	"{NAME}" : return TOK_IDENT
+	"\}" : self.POPSTATE()
+	"<<EOF>>" : error(self, "EOF while reading regular expression identifier")
+

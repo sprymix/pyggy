@@ -1,0 +1,232 @@
+\chapter{The PyLly spec file}
+
+The PyLly spec file specifies regular expressions to match and code
+to execute when a pattern is matched.   The file itself is comprised
+of a number of sections. 
+
+\section{The Code section}
+The first section type is the \code{code} section.  It specifies code to
+be copied directly to the output file (unindented).  The \code{code} section
+is started with the word \code{code} followed by a colon and a newline.  All
+the indented code that follows is copied directly to the output file.
+For example:
+
+\begin{verbatim}
+code :
+    def printjoined(l) :
+        print " ".join(l)
+
+    printjoined["this","is","a","test"])
+\end{verbatim}
+
+If more than one code section appears in the spec file, the code from
+each section is gathered together and copied out to the output file.
+
+\section{The Definition section}
+The second type of secion type is the \code{definitions} section.  It provides
+a convenient way to define often-used patterns.  It is started with
+the word \code{definitions} followed by a colon and a newline.  Each line
+in the definitions file specifies a pattern name and a pattern seperated
+by an arbitrary number of spaces.  Patterns are always regular expressions 
+enclosed in quotes in PyLly [Regular expressions will be discussed
+more fully later].  For example:
+
+\begin{verbatim}
+definitions:
+    ID      "[A-Za-z_][A-Za-z0-9_]*"
+    IDPAIR  "{ID} {ID}"
+\end{verbatim}
+
+This example defines the pattern named \code{ID} as a letter or underscore
+followed by zero or more letters, numbers or underscores.  This pattern
+can be used latter in other regular expressions by enclosing them in
+braces as illustrated in the definition of \code{IDPAIR} as two identifiers
+seperated by a space.  All named patterns are self contained; there
+is never a need to enclose a named pattern within parenthesis to avoid
+unusual effects.
+
+There may be multiple definitions sections within the spec file.  Definitions
+may be used in any patterns following the definition.
+
+\section{Starting States}
+The final type of sections in PyLly are starting state sections.  Each
+start state section is indicated with a list of start state names seperated
+by commas followed by a colon and a newline.  Each line within the
+indented section specifies a pattern and code to execute when the pattern
+is matched.  The code is specified either as a single line of code
+immediately following a colon, or the indented block of code following
+a colon and a newline.  For example:
+
+\begin{verbatim}
+INITIAL :
+    "{ID}" :
+        idcnt += 1
+        return "Identifier"
+    "abc*" : return "pattern1"
+\end{verbatim}
+
+This section specifies two patterns within the \code{INITIAL} start state.
+When the first pattern is matched, two lines of code are executed.
+When the second line is matched, just one line of code is executed.
+
+Start states specify seperate state machines.  Most lexers will only
+need one start state, and it may be given any name (excluding 
+\code{definitions} and \code{code}) 
+as long as it is the first start state in the file.  
+Occasionally a lexer may need to match some patterns in one context
+and other patterns in another context.  Multiple start states provide
+a mechanism for achieving this.  The lexer always starts off in the
+first start state encountered in the spec file.  Helper methods
+are provided which lexer actions can call to switch the start state.
+
+\section{Regular Expressions}
+The patterns used in the PyLly lexer spec file use standard regular
+expression conventions.  All patterns must be enclosed in quotes.
+Quotes may appear within patterns as long as they are escaped to avoid
+ending the pattern.
+The following regular expression operators
+are provided:
+
+\begin{tableii}{l|l}{exception}{Expression}{Description}
+  \lineii{( re )}  {Parentheses can be used to override precedence rules.}
+  \lineii{re re}   {A regular expression can be concatenated with another.}
+  \lineii{re | re} {Match either re.}
+  \lineii{re +}    {Specify that re be matched one or more times.}
+  \lineii{re *}    {Specify that re be matched zero or more times.}
+  \lineii{re ?}    {Specify that re be matched zero or one times.}
+  \lineii{.}       {Matches any character other than newline.}
+\end{tableii}
+
+Regular expression primitives are either characters, escaped characters
+or character classes.  Most characters can be given directly.  Special
+characters such as quote, question mark and vertical bar must be escaped
+with a backslash (eg. \code{\e ?} for question mark) to prevent them from being
+interpretted as regular expression operators.  The newline, tab, carriage
+return and NUL characters are specified with \code{\e n}, \code{\e t}, 
+\code{\e r} and \code{\e 0} respectively.
+
+\section{Character Classes}
+Character classes are enclosed in brackets and specify a set of characters
+to match.  Within the brackets, single characters or ranges specified
+as a low character, a dash and a high character, can be specified.  For
+example \code{[a-z0]} specifies all characters from \code{"a"} to 
+\code{"z"} and the character
+\code{"0"}.  Escape characters can be used within character classes.  The
+inversion of a character class is specified by using the 
+\code{"\^{}"} character
+immediately after the open brace: \code{[\^{}a-z]} specifies all characters
+except those from \code{"a"} to \code{"z"}.  
+In addition the following names can
+be used within the character class (ie: \code{"[[:alpha:]0]"} for all the
+alphabet and the \code{"0"} character):
+
+\begin{tableii}{l|l}{exception}{Class Name}{Description}
+  \lineii{[:alnum:]}   {Alphabet and number characters.}
+  \lineii{[:alpha:]}   {Alphabet characters}
+  \lineii{[:blank:]}   {Tab and space.}
+  \lineii{[:cntrl:]}   {Control characters.}
+  \lineii{[:digit:]}   {Number characters.}
+  \lineii{[:graph:]}   {Characters that show up on the screen.}
+  \lineii{[:lower:]}   {Lowercase alphabet characters.}
+  \lineii{[:print:]}   {Characters that show up on the screen and space.}
+  \lineii{[:punct:]}   {Punctuation characters.}
+  \lineii{[:space:]}   {Any form of formatting character (spaces, newlines, ...).}
+  \lineii{[:upper:]}   {Uppercase alphabet characters.}
+  \lineii{[:xdigit:]}  {Hexadecimal number characters.}
+\end{tableii}
+
+
+\section{Pattern operators}
+In addition to the normal regular expression operators and primitives,
+the following may be used within the patterns in a start state section
+(but not within the patterns of a definition section):
+
+
+\begin{tableii}{l|l}{exception}{Expression}{Description}
+  \lineii{\^{} re}    {The re is only matched at the start of the line.}
+  \lineii{<{}<EOF>{}>}  {Matches only the end of file.}
+\end{tableii}
+
+
+\section{Action Code}
+When a pattern is matched during lexing, the action code for the pattern
+is invoked.  The code is executed with one argument, \code{self}, which refers
+to the lexer class (eg. \code{pyggy.lexer.lexer}).  When the code is called,
+the \code{self.value} variable contains a string of the characters that
+were matched by the pattern.  The action code may alter this variable
+as it sees fit.
+If the action code returns \code{None}, lexing is continued, otherwise the
+returned token is returned from the lexer to its caller.
+
+The action code may make use of several methods in the lexer class:
+
+\begin{tableii}{l|l}{exception}{Method}{Description}
+  \lineii{\code{PUSHSTATE(statenum)}}  
+	{When lexing continues, start in the specified start state.}
+  \lineii{\code{POPSTATE()}} 
+	{When lexing continues, start in the previous start state.}
+  % XXX these need to be able to wrap around to multiple lines, but how?
+  \lineii{\code{PUSHBACK(str)}} 
+	{take the characters in \code{str} and
+       push them back on the input stream so that they may be
+       matched against when lexing continues.}
+  \lineii{\code{ENQUEUE(tok, val)}} 
+	{push a token onto the lexer queue.
+       The next time a token is retrieved, it will be retrieved from
+       the lexer queue prior to matching patterns from the input
+       stream.  The lexer's \code{value} variable will be set from
+       \code{val} when \code{tok} is returned.}
+\end{tableii}
+
+\section{Grammar}
+% This was made by running pyggy -d1 pylly.pyg and
+% then manually post-processing the output in vi.  If we
+% do this often we might want to write a sed script.
+\begin{productionlist}[pylly]
+  \production{spec} {sect spec}
+  \production{spec} {sect}
+  \production{sect} {\token{definitions} \token{INDENT} deflist \token{DEDENT}}
+  \production{sect} {\token{SRCCODE}}
+  \production{sect} {statelist \token{INDENT} rulelist \token{DEDENT}}
+  \production{statelist} {\token{IDENT}}
+  \production{statelist} {statelist \token{,} \token{IDENT}}
+  \production{deflist} {\token{IDENT} \token{\"} regexp \token{\"} \token{\e n}}
+  \production{deflist} {deflist \token{IDENT} \token{\"} regexp \token{\"} \token{EOL}}
+  \production{rulelist} {\token{\"} rulepat \token{\"} \token{SRCCODE}}
+  \production{rulelist} {rulelist \token{\"} rulepat \token{\"} \token{SRCCODE}}
+  \production{rulepat} {optanchor regexp}
+  \production{rulepat} {\token{<{}<EOF>{}>}}
+  \production{optanchor} {\token{\^{}}}
+  \production{optanchor} {}
+  \production{regexp} {reclause}
+  \production{regexp} {regexp reclause}
+  \production{reclause} {reclause \token{+}}
+  \production{reclause} {reclause \token{*}}
+  \production{reclause} {reclause \token{?}}
+  \production{reclause} {reclause \token{|} reclause}
+  \production{reclause} {\token{(} regexp \token{)}}
+  \production{reclause} {\token{IDENT}}
+  \production{reclause} {cclass}
+  \production{reclause} {\token{CHAR}}
+  \production{reclause} {\token{.}}
+  \production{cclass} {\token{[} optinvert ranges \token{]}}
+  \production{optinvert} {\token{\^{}}}
+  \production{optinvert} {}
+  \production{ranges} {range}
+  \production{ranges} {ranges range}
+  \production{range} {\token{CHAR}}
+  \production{range} {\token{CHAR} \token{-} \token{CHAR}}
+  \production{range} {\token{[:alnum:]}}
+  \production{range} {\token{[:alpha:]}}
+  \production{range} {\token{[:blank:]}}
+  \production{range} {\token{[:cntrl:]}}
+  \production{range} {\token{[:digit:]}}
+  \production{range} {\token{[:graph:]}}
+  \production{range} {\token{[:lower:]}}
+  \production{range} {\token{[:print:]}}
+  \production{range} {\token{[:punct:]}}
+  \production{range} {\token{[:space:]}}
+  \production{range} {\token{[:upper:]}}
+  \production{range} {\token{[:xdigit:]}}
+\end{productionlist}
+

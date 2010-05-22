@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="next" HREF="node7.html">
+<LINK REL="prev" HREF="node5.html">
+<LINK REL="parent" HREF="node4.html">
+<LINK REL="next" HREF="node7.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="Using PyLly">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>2.2 Using PyLly</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="2.1 Installing" 
+  HREF="node5.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="2. Quick Start" 
+  HREF="node4.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="2.3 Using PyGgy" 
+  HREF="node7.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node5.html">2.1 Installing</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node4.html">2. Quick Start</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node7.html">2.3 Using PyGgy</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION004200000000000000000">
+2.2 Using PyLly</A>
+</H1>
+PyLly reads in a specification file for a lexer and generates tables
+that can be used by a lexer to tokenize a stream of data.  The first
+step in using PyLly is to construct a specification file.  This
+file specifies how to pull tokens out of an input stream.  
+An example of a simple specfile is given in <span class="file">test1.pyl</span>:
+
+<P>
+<div class="verbatim"><pre>
+INITIAL :
+    "abc*" :    return "pattern1"
+    "d|efg" :   return "pattern2"
+    "^abx" :    return "pattern3"
+    "\n" :      return              # ignore newlines
+</pre></div>
+
+<P>
+This specification states that if an <code>a</code> then a <code>b</code> and then an
+arbitrary number of <code>c</code> characters are encountered, the lexer should
+return the string with a token value of <code>"pattern1"</code>.  
+Similarly if a <code>d</code> or <code>e</code> followed
+by the characters <code>fg</code> are seen, then a token value of <code>"pattern2"</code> 
+should be returned.
+If the characters <code>abx</code> are encountered at the start of a line then
+<code>"pattern3"</code> is returned.  Finally if the newline character is seen,
+no token is returned.  Any other characters cause an error token
+to be returned.
+
+<P>
+Once a specification file has been made, it is a simple matter to
+use it.  The <span class="file">examples/test1.py</span> program provides an example:
+
+<P>
+<div class="verbatim"><pre>
+import pyggy
+
+l,tab = pyggy.getlexer("test1.pyl")
+l.setinput("-")
+while 1 :
+    x = l.token()
+    if x is None :
+        break
+    print x, l.value
+</pre></div>
+
+<P>
+The <code>getlexer</code> function takes care of parsing the lexer specification
+file, generating tables for a lexer, loading the tables and constructing
+a lexer.  It returns the constructed lexer and a handle on the generated
+lexer table module.  The example makes use of the lexer by first specifying
+an input file for the lexer to read from and then by calling the
+<code>token</code> method to retrieve each successive token.  The <code>setinput</code>
+method is used to specify which file to read input from.  In this case
+the special name <span class="file">-</span> is used which denotes that input should
+come from <code>stdin</code>.  The <code>token</code> method returns the next token
+value from the input stream when called.  It returns <code>None</code> when
+the input source has been exhausted.  An auxiliary value stored in
+the <code>value</code> member contains the value of the token (which is usually
+a string of the characters that make up the token).
+
+<P>
+The example can be run as follows:
+
+<P>
+<div class="verbatim"><pre>
+$ echo "abccccdfghabx" | python test1.py
+pattern1 abcccc
+pattern2 dfg
+#ERR# h
+pattern1 ab
+#ERR# x
+</pre></div>
+
+<P>
+Notice that the lexer returns error tokens for the unrecognized
+patterns.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="2.1 Installing" 
+  rel="prev" title="2.1 Installing" 
+  HREF="node5.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="2. Quick Start" 
+  rel="parent" title="2. Quick Start" 
+  HREF="node4.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="2.3 Using PyGgy" 
+  rel="next" title="2.3 Using PyGgy" 
+  HREF="node7.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node5.html">2.1 Installing</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node4.html">2. Quick Start</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node7.html">2.3 Using PyGgy</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

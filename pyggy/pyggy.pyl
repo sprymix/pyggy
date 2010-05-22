@@ -1,0 +1,147 @@
+#
+# pyggy_lex.pyl
+#	Specification of the lexer for the pyg spec files.
+#
+
+definitions :
+	WS			"[[:blank:]]+"
+	NOTWS		"[^[:blank:]\n]+"
+	COMMENT		"#[^\n]*"
+
+code :
+	from errors import *
+
+	TOK_CODE = "TOK_CODE"
+	TOK_LEFT = "TOK_LEFT"
+	TOK_RIGHT = "TOK_RIGHT"
+	TOK_NONASSOC = "TOK_NONASSOC"
+	TOK_PREC = "TOK_PREC"
+	TOK_PREF = "TOK_PREF"
+	TOK_GT = "TOK_GT"
+	TOK_REL = "TOK_REL"
+	TOK_DERIVES = "TOK_DERIVES"
+	TOK_ALT = "TOK_ALT"
+	TOK_END = "TOK_END"
+	TOK_OPAREN = "TOK_OPAREN"
+	TOK_CPAREN = "TOK_CPAREN"
+	TOK_ID = "TOK_ID"
+	TOK_STAR = "TOK_STAR"
+	TOK_PLUS = "TOK_PLUS"
+	TOK_OPTIONAL = "TOK_OPTIONAL"
+	TOK_SRCCODE = "TOK_SRCCODE"
+
+	import string
+
+	lineno = 1
+	codedata = ""
+	tabstop = 8
+	curindent = [0]
+
+	def error(l, str) :
+		global lineno
+		raise SpecError("%d near '%s': %s" % (lineno, l.value, str))
+
+	def indentlevel(str) :
+		col = 0
+		for ch in str :
+			if ch == '\t' :
+				col = (1 + col / tabstop) * tabstop
+			else :
+				col += 1
+		return col
+
+	def indent(l, st) :
+		curindent.append(-1)
+		l.PUSHSTATE(st)
+
+	def unindent(l) :
+		l.POPSTATE()
+		curindent[-1:] = []
+
+	def checkindent(l, str, allowindent) :
+		cnt = indentlevel(str)
+		if curindent[-1] == -1 :
+			curindent[-1] = cnt
+		if cnt > curindent[-1] and not allowindent :
+			error(l, "illegal indentation")
+		if cnt < curindent[-1] :
+			unindent(l)
+			return 1
+		return 0
+
+INITIAL :
+	"code" : return TOK_CODE
+	"%left" : return TOK_LEFT
+	"%right" : return TOK_RIGHT
+	"%nonassoc" : return TOK_NONASSOC
+	"%prec" : return TOK_PREC
+	"%pref" : return TOK_PREF
+	"%gt" : return TOK_GT
+	"%rel" : return TOK_REL
+	"->" : return TOK_DERIVES
+	"\|" : return TOK_ALT
+	";" : return TOK_END
+	"\(" : return TOK_OPAREN
+	"\)" : return TOK_CPAREN
+	"\*" : return TOK_STAR
+	"\+" : return TOK_PLUS
+	"\?" : return TOK_OPTIONAL
+
+	"\n" : 
+		global lineno
+		lineno += 1
+	"{COMMENT}" : pass
+	"[[:blank:]]+" : return
+	"[[:alpha:]_][[:alnum:]_]*" : return TOK_ID
+	"\"[^\"\n]*\"" :
+		self.value = self.value[1:-1]
+		return TOK_ID
+	"'[^'\n]*'" :
+		self.value = self.value[1:-1]
+		return TOK_ID
+
+	":{WS}?{COMMENT}?\n" : # start of multi-line indented code block
+		global codedata, lineno
+		lineno += 1
+		codedata = ""
+		indent(self, CODE)
+	":[^\n]*" : # single line of source code
+		global lineno
+		lineno += 1
+		self.value = self.value[1:]
+		while self.value[0] in string.whitespace :
+			self.value = self.value[1:]
+		self.value += "\n"
+		return TOK_SRCCODE
+
+# get a block of code until we unindent.
+CODE :
+	"\n" :
+		global codedata, lineno
+		lineno += 1
+		codedata += self.value
+	"^{WS}?{COMMENT}?\n" :
+		global codedata, lineno
+		lineno += 1
+		codedata += self.value 
+	"^{WS}" :
+		global codedata, curindent
+		if checkindent(self, self.value, 1) :
+			self.value = codedata
+			return TOK_SRCCODE
+		else :
+			codedata += " " * (indentlevel(self.value) - curindent[-1])
+	"^{NOTWS}[^\n]*" :
+		global codedata
+		self.PUSHBACK(self.value)
+		unindent(self)
+		self.value = codedata
+		return TOK_SRCCODE
+	"<<EOF>>" :
+		unindent(self)
+		self.value = codedata
+		return TOK_SRCCODE
+	"[^\n]" :
+		global codedata
+		codedata += self.value
+

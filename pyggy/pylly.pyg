@@ -1,0 +1,260 @@
+#
+# pylly_gram.pyg
+#	Grammar for parsing pyl files.
+#
+
+code :
+	import array
+
+	import nfa
+	import dfa
+	from util import printable
+	from errors import *
+
+	# precomputed
+	wildclass = map(chr, range(0,10) + range(11,256))
+
+	# information we parsed and analyzed, most of these variables
+	# are used externally when we're done.
+	n = nfa.nfa()
+	globcode = "" 			# top-level code we emit
+	namedmachines = dict()	# set of machines indexed by name
+	statenums = dict()		# set of state nums indexed by name, and the count
+
+			# indexed by starting state
+	eofacts = []			# actions on eof, indexed by state
+	statemachs = []			# two machines (anchored and unanchored) per state
+
+			# indexed by machine number.
+	actions = [None]		# list of actions (code) to perform on acceptance
+	relist = [None]			# list of regular expressions we're matching
+
+
+
+	# helper functions
+	def addrule(state, pat, code, usecopy) :
+		"add a regexp rule or an eof rule in a given start state"
+		global statemachs, actions, relist
+		mach,anch,str,eof = pat
+		if eof :
+			if eofacts[state] != None :
+				# XXX use state name in error
+				raise SpecError("Duplicate EOF action in state %d" % state)
+			eofacts[state] = code
+		else :
+			if usecopy :
+				mach = n.copymach(mach)
+			# XXX this makes lots of duplicate rules.  We can
+			# share the same action with all rules that share the same pattern
+			ruleno = len(relist)
+			n.setaccept(mach, ruleno)
+			actions.append(code)
+			relist.append(str)
+			statemachs[state][anch] = n.dualmach(statemachs[state][anch], mach)
+
+	def addstate(name) :
+		"add a start state with the given name"
+		if name not in statenums :
+			statenums[name] = len(statenums)
+			eofacts.append(None)
+			statemachs.append([None,None])
+		return statenums[name]
+
+	def list2cset(l) :
+		"return a cset based on a list"
+		s = array.array('b', [0] * 256)
+		for n in l :
+			s[n] = 1
+		return s
+
+	def cset2list(cs, inv) :
+		"return a list based on a cset, invert if requested"
+		set = []
+		for i in xrange(256) :
+			if cs[i] != inv :
+				set.append(chr(i))
+		return set
+
+	def csetunion(r1, r2) :
+		"""
+		given two lists of values, return a new list that is the union
+		The ranges are altered in the process
+		"""
+		for n in xrange(256) :
+			r1[n] |= r2[n]
+		return r1
+
+%nonassoc TOK_POSCLOS TOK_STARCLOS TOK_OPTIONAL ;
+%left PREC_CAT TOK_ALT ;
+
+# specfile grammar
+spec -> sect spec
+	| sect
+	;
+
+sect -> TOK_DEFS TOK_INDENT deflist TOK_DEDENT :
+		# defs are already processed
+		return
+	| TOK_SRCCODE :
+		global globcode
+		globcode += kids[0]
+	| statelist TOK_INDENT rulelist TOK_DEDENT :
+		states = kids[0]
+		rules = kids[2]
+		for idx in xrange(len(states)) :
+			copy = (idx != len(states) - 1)
+			st = states[idx]
+			for pat,code in rules :
+				addrule(st, pat, code, copy)
+	;
+
+statelist -> TOK_IDENT :
+		return [addstate(kids[0])]
+	| statelist TOK_COMMA TOK_IDENT :
+		kids[0].append(addstate(kids[2]))
+		return kids[0]
+	;
+
+deflist -> TOK_IDENT TOK_QUOTE regexp TOK_QUOTE TOK_EOL :
+		name = kids[0]
+		mach,str = kids[2]
+		namedmachines[name] = mach
+	| deflist TOK_IDENT TOK_QUOTE regexp TOK_QUOTE TOK_EOL :
+		name = kids[1]
+		mach,str = kids[3]
+		namedmachines[name] = mach
+	;
+
+rulelist -> TOK_QUOTE rulepat TOK_QUOTE TOK_SRCCODE :
+		rule = kids[1],kids[3]
+		return [rule]
+	| rulelist TOK_QUOTE rulepat TOK_QUOTE TOK_SRCCODE :
+		rule = kids[2],kids[4]
+		kids[0].append(rule)
+		return kids[0]
+	;
+
+rulepat -> optanchor regexp :
+		anch = kids[0]
+		mach,str = kids[1]
+		if anch :
+			str = "^" + str
+		return mach,anch,str,0
+	| TOK_EOFEOF :
+		return None,None,"<<EOF>>",1
+	;
+
+optanchor -> TOK_ANCHOR :
+		return 1
+	| :
+		return  0
+	;
+
+# regular expression grammar
+regexp -> regexp TOK_POSCLOS :
+		mach,str = kids[0]
+		return n.posclosmach(mach), str+"+"
+	| regexp TOK_STARCLOS :
+		mach,str = kids[0]
+		return n.starclosmach(mach), str+"*"
+	| regexp TOK_OPTIONAL :
+		mach,str = kids[0]
+		return n.optmach(mach), str+"?"
+	| regexp TOK_ALT regexp :
+		mach,str = kids[0]
+		mach2,str2 = kids[2]
+		return n.altmach(mach, mach2), str+"|"+str2
+	| %prec(PREC_CAT) regexp regexp :
+		mach,str = kids[0]
+		mach2,str2 = kids[1]
+		return n.catmach(mach, mach2), str+str2
+	| TOK_OPAREN regexp TOK_CPAREN :
+		return kids[1]
+	| TOK_IDENT :
+		name = kids[0]
+		str = "{%s}" % name
+		if not name in namedmachines :
+			raise SpecError("There is no pattern named %s" % kids[0])
+		mach = n.copymach(namedmachines[name])
+		return mach,str
+	| cclass :
+		chclass,str = kids[0]
+		return n.singmach(chclass),str
+	| TOK_CHAR :
+		chclass,str = [kids[0]], printable(kids[0])
+		return n.singmach(chclass),str
+	| TOK_WILDCARD :
+		return n.singmach(wildclass), "."
+	;
+
+cclass -> TOK_OBRACKET optinvert ranges TOK_CBRACKET :
+		inv = kids[1]
+		rstr,cset = kids[2]
+		str = "[%s%s]" % (["","^"][inv], rstr)
+		return cset2list(cset, inv), str
+	;
+
+optinvert -> TOK_INVERT :
+		return 1
+	| :
+		return 0
+	;
+
+ranges -> range :
+		return kids[0]
+	| ranges range :
+		str,cs = kids[0]
+		str2,cs2 = kids[1]
+		return str+str2, csetunion(cs, cs2)
+	;
+
+range -> TOK_CHAR :
+		str = printable(kids[0])
+		r = [ord(kids[0])]
+		return str, list2cset(r)
+	| TOK_CHAR TOK_DASH TOK_CHAR :
+		str = "%s-%s" %  (printable(kids[0]), printable(kids[2]))
+		min,max = ord(kids[0]), ord(kids[2])
+		if min > max :
+			raise SpecError("bad character range %s" % str)
+		r = range(min, max+1)
+		return str, list2cset(r)
+	| TOK_CCALNUM :
+		r = range(0x30,0x3a) + range(0x41,0x5b) + range(0x61,0x7b)
+		return kids[0], list2cset(r)
+	| TOK_CCALPHA :
+		r = range(0x41,0x5b) + range(0x61,0x7b)
+		return kids[0], list2cset(r)
+	| TOK_CCBLANK :
+		r = [0x09, 0x20]
+		return kids[0], list2cset(r)
+	| TOK_CCCNTRL :
+		r = range(0x00,0x20) + range(0x7f,0x80)
+		return kids[0], list2cset(r)
+	| TOK_CCDIGIT :
+		r = range(0x30,0x3a)
+		return kids[0], list2cset(r)
+	| TOK_CCGRAPH :
+		r = range(0x21,0x7f)
+		return kids[0], list2cset(r)
+	| TOK_CCLOWER :
+		r = range(0x61,0x7b)
+		return kids[0], list2cset(r)
+	| TOK_CCPRINT :
+		r = range(0x20,0x7f)
+		return kids[0], list2cset(r)
+	| TOK_CCPUNCT :
+		r = range(0x21,0x30) + range(0x3a, 0x41) + range(0x5b, 0x61) + \
+			range(0x7b, 0x7f)
+		return kids[0], list2cset(r)
+	| TOK_CCSPACE :
+		r = range(0x09,0x0e) + range(0x20,0x21)
+		return kids[0], list2cset(r)
+	| TOK_CCUPPER :
+		r = range(0x41,0x5b)
+		return kids[0], list2cset(r)
+	| TOK_CCXDIGIT :
+		r = range(0x30,0x3a) + range(0x41, 0x47) + range(0x61, 0x67)
+		return kids[0], list2cset(r)
+	;
+

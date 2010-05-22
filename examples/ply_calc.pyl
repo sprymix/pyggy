@@ -1,0 +1,53 @@
+# -----------------------------------------------------------------------------
+# calc.pyl
+# -----------------------------------------------------------------------------
+
+code :
+	tokens = (
+		'NAME','NUMBER',
+		'PLUS','MINUS','TIMES','DIVIDE','EQUALS',
+		'LPAREN','RPAREN',
+	)
+
+	lineno = 1
+
+	class Tok :
+		def __init__(self, l, type) :
+			self.type = type
+			self.lineno = lineno
+			self.value = l.value
+		def __str__(self) :
+			return "Tok(%s,%r,%d)" % (self.type, self.value, self.lineno)
+
+definitions :
+	NAME	"[[:alpha:]_][[:alnum:]_]*"
+	NUMBER	"[[:digit:]]+"
+
+INITIAL :
+	"\+" :	return Tok(self, "PLUS")
+	"-" :	return Tok(self, "MINUS")
+	"\*" :	return Tok(self, "TIMES")
+	"/" :	return Tok(self, "DIVIDE")
+	"=" :	return Tok(self, "EQUALS")
+	"\(" :	return Tok(self, "LPAREN")
+	"\)" :	return Tok(self, "RPAREN")
+
+	"{NAME}":	return Tok(self, "NAME")
+	"{NUMBER}":	
+		try :
+			self.value = int(self.value)
+		except ValueError :
+			print "Integer value too large", self.value
+			self.value = 0
+		return Tok(self, "NUMBER")
+
+	"[[:blank:]]" : return
+	"\n+" :
+		global lineno
+		lineno += len(self.value)
+		return
+
+	"." :
+		print "Illegal character '%s'" % self.value
+		return
+

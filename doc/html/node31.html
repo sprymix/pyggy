@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="next" HREF="node32.html">
+<LINK REL="prev" HREF="node30.html">
+<LINK REL="parent" HREF="node27.html">
+<LINK REL="next" HREF="node32.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="EBNF">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>5.4 EBNF</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="5.3 Action Code" 
+  HREF="node30.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="5. The PyGgy spec" 
+  HREF="node27.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="5.5 The effect of" 
+  HREF="node32.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node30.html">5.3 Action Code</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node27.html">5. The PyGgy spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node32.html">5.5 The effect of</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION007400000000000000000">
+5.4 EBNF</A>
+</H1>
+PyGgy supports some extended BNF constructs to simplify the construction
+of a grammar.  These constructs are:
+
+<P>
+<table border align="center" style="border-collapse: collapse">
+  <thead>
+    <tr class="tableheader">
+      <th align="left"><b>EBNF Construct</b>&nbsp;</th>
+      <th align="left"><b>Description</b>&nbsp;</th>
+      </tr>
+    </thead>
+  <tbody valign="baseline">
+    <tr><td align="left" valign="baseline"><tt class="exception">( rhs )</tt></td>
+        <td align="left">Right hand side elements can be grouped.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">rhs *</tt></td>
+        <td align="left">Denotes zero or more repetitions of rhs.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">rhs +</tt></td>
+        <td align="left">Denotes one or more repetitions of rhs.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">rhs ?</tt></td>
+        <td align="left">Denotes that rhs is optional.</td></tbody>
+</table>
+
+<P>
+Use of these constructs cause internal productions to be added
+to the grammar.  These can be viewed by setting the debug flag to
+<code>1</code> when parsing the spec file.
+For example, the spec file:
+
+<P>
+<div class="verbatim"><pre>
+lines -&gt; line* ;
+line -&gt; A? | B+ | C D* ;
+</pre></div>
+
+<P>
+results in the following grammar:
+
+<P>
+<div class="verbatim"><pre>
+lines.clos1 -&gt;
+lines.clos1 -&gt; lines.clos1 line
+lines -&gt; lines.clos1
+line.opt2 -&gt;
+line.opt2 -&gt; A
+line -&gt; line.opt2
+line.posclos3 -&gt; B
+line.posclos3 -&gt; line.posclos3 B
+line -&gt; line.posclos3
+line.clos4 -&gt;
+line.clos4 -&gt; line.clos4 D
+line -&gt; C line.clos4
+</pre></div>
+
+<P>
+The internal productions contain action code that implement the 
+obvious actions.  Productions generated with <code>"+"</code> or <code>"*"</code>
+return a list of elements.  Productions generated with <code>"?"</code>
+return the optional value or the value <code>None</code>.  Groupings of
+elements return a list of the elements.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="5.3 Action Code" 
+  rel="prev" title="5.3 Action Code" 
+  HREF="node30.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="5. The PyGgy spec" 
+  rel="parent" title="5. The PyGgy spec" 
+  HREF="node27.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="5.5 The effect of" 
+  rel="next" title="5.5 The effect of" 
+  HREF="node32.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node30.html">5.3 Action Code</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node27.html">5. The PyGgy spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node32.html">5.5 The effect of</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

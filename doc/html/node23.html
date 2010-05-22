@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="next" HREF="node24.html">
+<LINK REL="prev" HREF="node22.html">
+<LINK REL="parent" HREF="node18.html">
+<LINK REL="next" HREF="node24.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="Character Classes">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>4.5 Character Classes</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="4.4 Regular Expressions" 
+  HREF="node22.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="4. The PyLly spec" 
+  HREF="node18.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="4.6 Pattern operators" 
+  HREF="node24.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node22.html">4.4 Regular Expressions</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node18.html">4. The PyLly spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node24.html">4.6 Pattern operators</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION006500000000000000000">
+4.5 Character Classes</A>
+</H1>
+Character classes are enclosed in brackets and specify a set of characters
+to match.  Within the brackets, single characters or ranges specified
+as a low character, a dash and a high character, can be specified.  For
+example <code>[a-z0]</code> specifies all characters from <code>"a"</code> to 
+<code>"z"</code> and the character
+<code>"0"</code>.  Escape characters can be used within character classes.  The
+inversion of a character class is specified by using the 
+<code>"^"</code> character
+immediately after the open brace: <code>[^a-z]</code> specifies all characters
+except those from <code>"a"</code> to <code>"z"</code>.  
+In addition the following names can
+be used within the character class (ie: <code>"[[:alpha:]0]"</code> for all the
+alphabet and the <code>"0"</code> character):
+
+<P>
+<table border align="center" style="border-collapse: collapse">
+  <thead>
+    <tr class="tableheader">
+      <th align="left"><b>Class Name</b>&nbsp;</th>
+      <th align="left"><b>Description</b>&nbsp;</th>
+      </tr>
+    </thead>
+  <tbody valign="baseline">
+    <tr><td align="left" valign="baseline"><tt class="exception">[:alnum:]</tt></td>
+        <td align="left">Alphabet and number characters.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">[:alpha:]</tt></td>
+        <td align="left">Alphabet characters</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">[:blank:]</tt></td>
+        <td align="left">Tab and space.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">[:cntrl:]</tt></td>
+        <td align="left">Control characters.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">[:digit:]</tt></td>
+        <td align="left">Number characters.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">[:graph:]</tt></td>
+        <td align="left">Characters that show up on the screen.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">[:lower:]</tt></td>
+        <td align="left">Lowercase alphabet characters.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">[:print:]</tt></td>
+        <td align="left">Characters that show up on the screen and space.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">[:punct:]</tt></td>
+        <td align="left">Punctuation characters.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">[:space:]</tt></td>
+        <td align="left">Any form of formatting character (spaces, newlines, ...).</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">[:upper:]</tt></td>
+        <td align="left">Uppercase alphabet characters.</td>
+    <tr><td align="left" valign="baseline"><tt class="exception">[:xdigit:]</tt></td>
+        <td align="left">Hexadecimal number characters.</td></tbody>
+</table>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="4.4 Regular Expressions" 
+  rel="prev" title="4.4 Regular Expressions" 
+  HREF="node22.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="4. The PyLly spec" 
+  rel="parent" title="4. The PyLly spec" 
+  HREF="node18.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="4.6 Pattern operators" 
+  rel="next" title="4.6 Pattern operators" 
+  HREF="node24.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node22.html">4.4 Regular Expressions</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node18.html">4. The PyLly spec</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" HREF="node24.html">4.6 Pattern operators</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,7 @@
+
+# This grammar is ambiguous
+E -> E PLUS E
+	| E TIMES E
+	| ID
+	;
+

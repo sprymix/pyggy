@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="pyggy.css" type='text/css'>
+<link rel="SHORTCUT ICON" href="icons/pyfav.gif">
+<link rel="first" href="pyggy.html" title='PyGgy Manual'>
+<link rel='contents' href='contents.html' title="Contents">
+<link rel='last' href='about.html' title='About this document...'>
+<link rel='help' href='about.html' title='About this document...'>
+<LINK REL="next" href="module-pyggy.lexer.html">
+<LINK REL="prev" HREF="node11.html">
+<LINK REL="parent" HREF="node11.html">
+<LINK REL="next" href="module-pyggy.lexer.html">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name='aesop' content='information'>
+<META NAME="description" CONTENT="pyggy">
+<META NAME="keywords" CONTENT="pyggy">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<title>3.1 pyggy</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="3. API Reference" 
+  HREF="node11.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="3. API Reference" 
+  HREF="node11.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="3.2 pyggy.lexer - The" 
+  href="module-pyggy.lexer.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node11.html">3. API Reference</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node11.html">3. API Reference</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-pyggy.lexer.html">3.2 pyggy.lexer - The</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION005100000000000000000">
+3.1 <tt class="module">pyggy</tt></A>
+</H1>
+
+
+<P>
+The <tt class="module">pyggy</tt> module is the container for the entire PyGgy
+and PyLly package.  Importing this module loads in the ``simple''
+API.   This API consists of a number of utility functions and
+exception classes.
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-2"><tt class="function">pyggy.generate</tt></a></b>(</nobr></td>
+  <td><var>fname, targ, debug=0, forcgen=0</var>)</td></tr></table>
+<dd>
+This function takes in filenames specifying a specification file
+and an output file name.  If the output file does not exist or
+is older than the specification file, it processes the specification
+file and generates tables into the target file.  The input specification
+must be a <span class="file">.pyl</span> or <span class="file">.pyg</span> file.  If the <code>debug</code> argument
+is specified, increased debugging information is emitted while
+processing the spec file.  For
+a description of the debug levels see the documentation on the
+<tt class="module">pyggy.pyggy</tt> and <tt class="module">pyggy.pylly</tt> modules.  If <code>forcegen</code>
+is true, the specification file is processed whether or not it is
+newer than the target file.
+
+<P>
+If an invalid specification file is specified, <tt class="class">pyggy.ApiError</tt>
+is raised.  Any exception raised by <tt class="method">pyggy.pyggy.parsespec</tt> or
+<tt class="method">pyggy.pylly.parsespec</tt> may also be raised.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-3"><tt class="function">pyggy.getlexer</tt></a></b>(</nobr></td>
+  <td><var>specfname, debug=0, forcegen=0</var>)</td></tr></table>
+<dd>
+This function generates a lexer table module from a lexer spec file, imports
+the module and returns a <tt class="class">pyggy.lexer.lexer</tt> instance and the
+module.  The arguments <code>debug</code> and <code>forcegen</code> have the
+same meaning as in the <tt class="function">generate</tt> function.
+
+<P>
+This function can raise any of the exceptions raised by <tt class="function">generate</tt>.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-4"><tt class="function">pyggy.getparser</tt></a></b>(</nobr></td>
+  <td><var>specfname, debug=0, forcegen=0</var>)</td></tr></table>
+<dd>
+This function generates a parser table module from a parser spec file,
+imports the module and returns a <tt class="class">pyggy.glr.GLR</tt> instance
+and the module.  The arguments <code>debug</code> and <code>forcegen</code> have the
+same meaning as in the <tt class="function">generate</tt> function.
+
+<P>
+This function can raise any of the exceptions raised by <tt class="function">generate</tt>.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><a name="l2h-5"><tt class="function">pyggy.proctree</tt></a></b>(</nobr></td>
+  <td><var>t, gram, allowambig=0</var>)</td></tr></table>
+<dd>
+This function post-processes a parse tree previously returned
+from a call to a <tt class="method">parse</tt> method.  It takes as arguments
+the parse tree and the module containing the parse tables.  The
+optional argument <code>allowambig</code> is used to specify that ambiguous
+parses are allowed, otherwise a <tt class="class">pyggy.AmbigParseError</tt> is
+raised if any ambiguities are encountered in the parse tree.
+
+<P>
+The function walks the parse tree in a bottom-up fashion executing
+the semantic action code for each production used in the derivation.
+For each action executed, the list of the values from the right
+hand side of the production are passed in.  These values are either
+from the <code>value</code> fields of tokens, or the values previously
+returned by other action code functions.  If ambiguous parses are
+disallowed, each right hand side element is represented by the
+element's unique value.  In the case that ambiguous parses are allowed
+and an ambiguity is found in the parse tree, the ambiguous right
+hand side element will be represented with a <tt class="class">pyggy.glr.symnode</tt>
+instance whose <code>possibilities</code> field is a list of the alternate
+values. 
+
+<P>
+The <tt class="function">proctree</tt> function returns the value associated with
+the start symbol which is at the root of the parse tree.
+
+<P>
+This function may raise <tt class="class">pyggy.AmbigParseError</tt> if an ambiguous
+parse is detected or <tt class="class">pyggy.ApiError</tt> if an invalid tree is passed in.
+This function alters the parse tree as it operates on it.
+</dl>
+
+<P>
+<dl><dt><b><span class="typelabel">exception</span>&nbsp;<a name="l2h-6"><tt class="exception">pyggy.Error</tt></a></b>
+<dd>
+A superclass of all PyGgy generated exceptions.
+</dl>
+
+<P>
+<dl><dt><b><span class="typelabel">exception</span>&nbsp;<a name="l2h-7"><tt class="exception">pyggy.InternalError</tt></a></b>
+<dd>
+An error in the inner workings of PyGgy or PyLly.  This is a type
+of <tt class="class">pyggy.Error</tt>.
+</dl>
+
+<P>
+<dl><dt><b><span class="typelabel">exception</span>&nbsp;<a name="l2h-8"><tt class="exception">pyggy.ApiError</tt></a></b>
+<dd>
+This error specifies that there is an error in the way that
+PyGgy or PyLly is being used.  This is a type of <tt class="class">pyggy.Error</tt>.
+</dl>
+
+<P>
+<dl><dt><b><span class="typelabel">exception</span>&nbsp;<a name="l2h-9"><tt class="exception">pyggy.LexError</tt></a></b>
+<dd>
+This error specifies that there was an error while lexing an
+input source.  This exception is not currently used since the lexer
+currently returns an error token on errors.  This exception is a
+type of <tt class="class">pyggy.Error</tt>.
+</dl>
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><span class="typelabel">exception</span>&nbsp;<a name="l2h-10"><tt class="exception">pyggy.ParseError</tt></a></b>(</nobr></td>
+  <td><var>str, tok</var>)</td></tr></table>
+<dd>
+This error specifies that an error occured during the parsing of
+a token stream.  It stores a description of the error in <code>str</code>
+and the token that caused the error in <code>tok</code>.  This exception
+is a type of <tt class="class">pyggy.Error</tt>.
+</dl>
+
+<P>
+<dl><dt><b><span class="typelabel">exception</span>&nbsp;<a name="l2h-11"><tt class="exception">pyggy.AmbigParseError</tt></a></b>
+<dd>
+This error specifies that an ambiguity was present in a parse tree
+when ambiguities are disallowed.  It is a type of <tt class="class">pyggy.ApiError</tt>.
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><a rel="prev" title="3. API Reference" 
+  rel="prev" title="3. API Reference" 
+  HREF="node11.html"><img src='icons/previous.gif'
+border='0' height='32'  alt='Previous Page' width='32'></A></td>
+<td><a rel="parent" title="3. API Reference" 
+  rel="parent" title="3. API Reference" 
+  HREF="node11.html"><img src='icons/up.gif'
+border='0' height='32'  alt='Up One Level' width='32'></A></td>
+<td><a rel="next" title="3.2 pyggy.lexer - The" 
+  rel="next" title="3.2 pyggy.lexer - The" 
+  href="module-pyggy.lexer.html"><img src='icons/next.gif'
+border='0' height='32'  alt='Next Page' width='32'></A></td>
+<td align="center" width="100%">PyGgy Manual</td>
+<td><a rel="contents" title="Table of Contents" 
+  rel="contents" title="Table of Contents" 
+  href="contents.html"><img src='icons/contents.gif'
+border='0' height='32'  alt='Contents' width='32'></A></td>
+<td><img src='icons/blank.gif'
+  border='0' height='32'  alt='' width='32'></td>
+</tr></table>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" HREF="node11.html">3. API Reference</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" HREF="node11.html">3. API Reference</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="module-pyggy.lexer.html">3.2 pyggy.lexer - The</A>
+<hr>
+<span class="release-info">Release 0.4, documentation updated on October 15, 2004.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See the <a href="http://www.lava.net/~newsham/pyggy/">PyGgy Home Page</a>.
+</ADDRESS>
+</BODY>
+</HTML>

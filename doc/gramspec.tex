@@ -1,0 +1,248 @@
+\chapter{The PyGgy spec file}
+
+The PyGgy spec file is used to specify grammars for a parsing engine.
+PyGgy files are made up of a number of rules.  There are two types
+of rules in the spec file: precedence rules and production rules.
+
+\section{Production rules}
+Production rules are used to specify productions in the grammar.
+Each rule can specify several productions for a common non-terminal.
+The rule is written with an identifier for the non-terminal (the
+left hand side), the symbol \code{->} and a list of right hand sides seperated
+by the \code{|} character, and terminated with the \code{;} character.  
+Each right 
+hand side is specified by zero or more terminals or non-terminals.
+Terminals and non-terminals are represented by names starting with
+a letter or an underscore and containing letters, underscores and
+digits.  
+
+Each right hand side may be given an optional precedence, which will
+be described shortly.  Each right hand side may also be associated
+with a block of action code.  Action code is specified with a colon
+character followed by either a line of code, or a newline and an
+indented block of code.
+
+An example of a production is:
+\begin{verbatim}
+E -> TOK_ID :
+        return symtab[kids[0]]
+    | E TOK_ADD E :
+        return kids[0] + kids[2]
+    ;
+\end{verbatim}
+
+
+There may be many production rules in the
+spec file.  The left hand side of the first production is taken
+to be the start symbol of the grammar.
+
+\section{Precedence rules}
+Precedence rules are used to disambiguate ambiguous parses in the
+grammar.  They can be used to disambiguate an otherwise ambiguous
+grammar.  There are two precedence mechanisms.  The first is to assign
+precedences and associativities to terminals.  This is done with
+a precedence rule which specifies an associativity
+followed by a list of non-terminals followed by a semicolon.
+The associativity may be one of \code{\%left}, \code{\%right}
+or \code{\%nonassoc}.  An example of a precedence rule is:
+
+\begin{verbatim}
+%left TOK_MUL TOK_ADD ;
+\end{verbatim}
+
+All tokens specified in this way are given priorities from highest
+(most prefered) to lowest (lest prefered) in the order they are 
+encountered in the
+spec file.  The tokens are also assigned the designated associativity.
+Any production making use of these terminals inherits their
+associativity and precedence.
+
+It is also possible to directly assign a precedence and an associativity
+to a production.  This is done by prefixing a right hand side of a
+production with a \code{\%prec} operator.  
+For example, the following grammar has a
+well known ambiguity:
+
+\begin{verbatim}
+Expr -> e
+    ;
+Stmt -> IF Expr THEN Stmt ELSE Stmt
+    | IF Expr THEN Stmt 
+    | s
+    ;
+\end{verbatim}
+
+For example \code{IF e THEN s ELSE IF e THEN s ELSE s} can be parsed
+either as \code{IF e THEN s ELSE [IF e THEN s ELSE s]\}} or
+\code{IF e THEN s ELSE [IF e THEN s] ELSE s}.  We can specify that
+the first \code{Stmt} production has higher precedence than the second
+by specifying two dummy precedences and referencing them from
+the right hand sides:
+
+\begin{verbatim}
+%nonassoc LONG SHORT ;
+
+Stmt -> %prec(LONG) IF Expr THEN Stmt ELSE Stmt
+    | %prec(SHORT) IF Expr THEN Stmt 
+    | s
+    ;
+
+Expr -> e
+    ;
+\end{verbatim}
+
+The resulting parser has no ambiguities and prefers
+matching the longer statement whenever possible (binding the
+else statement to the nearest if statement).  
+See \file{exampmles/test3.py} for a complete example.
+
+\section{Action Code}
+Each production can have action code associated with it.  Action code
+is specified with a colon followed by a line of code or an indented
+block of code.
+
+Actions associated with productions are not performed during parsing.
+Rather these functions can be called during a post-processing pass of
+the parse tree with the \code{proctree} function.  
+
+The action code
+is called with one argument named \code{kids} which is a list of
+right hand side elements.  The value returned by the action code is
+associated with the production it belongs to.  When the production
+is used in the right hand side of another production in the parse
+tree, its value will be passed in as an elements of the \code{kids}
+argument for that production's action code.
+See the API reference for more details.
+
+If action code is not specified for a production, the default
+action is used.  This action is simply \code{return kids}, which
+returns a list of the right hand side elements of the derivation.
+Some productions in the grammar are generated internally and have
+their own actions associated with them, as will be seen in the next
+section.
+
+\section{EBNF}
+PyGgy supports some extended BNF constructs to simplify the construction
+of a grammar.  These constructs are:
+
+\begin{tableii}{l|l}{exception}{EBNF Construct}{Description}
+  \lineii{( rhs )} {Right hand side elements can be grouped.}
+  \lineii{rhs *}   {Denotes zero or more repetitions of rhs.}
+  \lineii{rhs +}   {Denotes one or more repetitions of rhs.}
+  \lineii{rhs ?}   {Denotes that rhs is optional.}
+\end{tableii}
+
+Use of these constructs cause internal productions to be added
+to the grammar.  These can be viewed by setting the debug flag to
+\code{1} when parsing the spec file.
+For example, the spec file:
+
+\begin{verbatim}
+lines -> line* ;
+line -> A? | B+ | C D* ;
+\end{verbatim}
+
+results in the following grammar:
+
+\begin{verbatim}
+lines.clos1 ->
+lines.clos1 -> lines.clos1 line
+lines -> lines.clos1
+line.opt2 ->
+line.opt2 -> A
+line -> line.opt2
+line.posclos3 -> B
+line.posclos3 -> line.posclos3 B
+line -> line.posclos3
+line.clos4 ->
+line.clos4 -> line.clos4 D
+line -> C line.clos4
+\end{verbatim}
+
+
+The internal productions contain action code that implement the 
+obvious actions.  Productions generated with \code{"+"} or \code{"*"}
+return a list of elements.  Productions generated with \code{"?"}
+return the optional value or the value \code{None}.  Groupings of
+elements return a list of the elements.
+
+
+
+\section{The effect of precedence on Parser Construction}
+During the construction of a parser, precedence rules are used
+to disallow certain derivations from being considered.
+The precedence rules setup a relationship between productions
+in the grammar.  Two productions in the grammar will either have
+no relation to each other, or one will be considered
+{\em gt}, {\em right}, {\em left} or {\em nonassoc} in relation
+to the other.  
+
+If a production is {\em gt} than another, it
+can never be used to derive the second production.  For
+example if \code{[E -> E * E]} {\em gt} \code{[E -> E + E]} then
+the derivations \code{[E -> [E -> E + E] * E]} and 
+\code{[E -> E * [E -> E + E]]}
+will never be allowed.
+
+If a production is {\em right} with respect to another, then
+the first production cannot derive the second one at the right-
+most position of the first production.  For example if
+\code{[E -> E * E]} {\em right} \code{[E -> E + E]} then the
+derivation \code{[E -> [E -> E + E] * E]} is not allowed, but the
+derivation \code{[E -> E * [E -> E + E]]} is.  Similarly the {\em left}
+relation indicates that the first production cannot derive the
+second at the left-most position.  The relationship {\em nonassoc}
+is a combination of both the {\em right} and {\em left} relationships.
+
+The relationship between productions is inferred from the
+precedence rules and the precedence operators in a grammar
+specification file.  The precedence rules setup a precedence
+ordering among terminals.  Each precedence involving a terminal
+that has a precedence associated with it inherits the precedence
+of that symbol.  One production is {\em gt} another if it has
+a higher precedence.  Productions relate to themselves with
+the {\em right}, {\em left} or {\em nonassoc} relations if they
+contain a terminal with the given associativity.
+
+The restrictions placed on the derivation by the precedence rules
+are used during parser construction in two ways.  First, it
+is used to prevent certain items from being added to an itemset
+if the item represents a precedence conflict.  Second, the
+computation of the {\em FOLLOWS} set is modified to compute
+the symbols that can follow each production, rather than the
+symbols that can follow each symbol.  Symbols that indicate
+a conflict are not added to the {\em FOLLOWS} set of a production.
+
+\begin{seealso}
+\seetitle[http://www.cs.uu.nl/groups/ST/Visser/DisambiguationFiltersForScannerlessGeneralizedLRParsers]{Disambiguation Filters for Scannerless Generalized LR Parsers}{The precedence system used by PyGgy is based on this paper.}
+\end{seealso}
+
+
+
+\section{Grammar}
+% This was made by egrep '^[a-zA-Z]|[;|]' pyggy.pyg and post
+% processing the output.  Sed script would be useful.
+\begin{productionlist}[pyggy]
+  \production{gram} {line | line gram}
+  \production{line} {precoper idlist \token{;}}
+  \production{line} {\token{\%rel} \token{ID} precoper \token{ID} \token{;}}
+  \production{line} {\token{ID} \token{->} rhslist \token{;}}
+  \production{line} {\token{code} \token{SRCCODE}}
+  \production{precoper} {\token{\%left} | \token{\%right} | \token{\%nonassoc} | \token{\%pref} | \token{\%gt}}
+  \production{rhslist} {optprec rhsellist optcode}
+  \production{rhslist} {rhslist \token{ALT} optprec rhsellist optcode}
+  \production{optcode} {\token{SRCCODE}}
+  \production{optcode} {}
+  \production{rhsellist} {rhsellist rhsel}
+  \production{rhsellist} {}
+  \production{rhsel} {\token{ID}}
+  \production{rhsel} {\token{(} rhslist \token{)}}
+  \production{rhsel} {rhsel \token{*}}
+  \production{rhsel} {rhsel \token{+}}
+  \production{rhsel} {rhsel \token{?}}
+  \production{idlist} {idlist \token{ID}}
+  \production{idlist} {}
+  \production{optprec} {\token{\%prec} \token{(} \token{ID} \token{)}}
+  \production{optprec} {}
+\end{productionlist}
+
