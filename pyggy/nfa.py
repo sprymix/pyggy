@@ -4,11 +4,11 @@
 #	Construction kit for building up NFAs for regular expressions.
 #
 
-import dot
+from pyggy import dot
 import string
 import array
 
-from util import printable,minof,maxof
+from pyggy.util import printable,minof,maxof
 
 # Constants
 EPSILON = 0

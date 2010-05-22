@@ -4,8 +4,10 @@ The helpers in this file are exported directly under the pyggy package.
 The provide easy access to parser and lexer construction.
 """
 
-import glr
-from errors import *
+from pyggy import glr
+from pyggy.errors import *
+import os
+import imp
 
 def _mtime(fname) :
 	import os
@@ -13,9 +15,15 @@ def _mtime(fname) :
 
 def _import(name) :
 	if name[-3:] == ".py" :
-		name = name[:-3]
-	exec "import " + name
-	return eval(name)
+		modulename = name[:-3]
+	else:
+		modulename = name
+	(path, modulefile) = os.path.split(name)
+	(modulename, moduleext) = os.path.splitext(modulefile)
+	(file, pathname, description) = imp.find_module(modulename, [path])
+	if file is not None:
+	    return imp.load_module(modulename, file, pathname, description)
+	return None
 
 def generate(fname, targ, debug=0, forcegen=0) :
 	"""
@@ -25,11 +33,11 @@ def generate(fname, targ, debug=0, forcegen=0) :
 	if forcegen or not os.path.exists(targ) or _mtime(targ) < _mtime(fname) :
 		print "generating %s from %s" % (targ, fname)
 		if fname[-4:] == ".pyl" :
-			import pylly
+			from pyggy import pylly
 			pylly.parsespec(fname, targ, debug=debug)
 		elif fname[-4:] == ".pyg" :
-			import pyggy
-			pyggy.parsespec(fname, targ, debug=debug)
+			from pyggy import pyggyc
+			pyggyc.parsespec(fname, targ, debug=debug)
 		else :
 			raise ApiError("bad spec filename %s" % fname)
 
@@ -38,7 +46,7 @@ def getlexer(specfname, debug=0, forcegen=0) :
 	Generate a lexer table, construct a lexer for lexing fname and return it.
 	Both the lexer and the generated module are returned.
 	"""
-	import lexer
+	from pyggy import lexer
 
 	if specfname[-4:] != ".pyl" :
 		raise ApiError("bad spec filename %s" % specfname)
@@ -52,8 +60,8 @@ def getparser(specfname, debug=0, forcegen=0) :
 	Generate a parser table, construct a parser and return it.
 	The parser and the generated module are returned.
 	"""
-	import srgram
-	import glr
+	from pyggy import srgram
+	from pyggy import glr
 
 	if specfname[-4:] != ".pyg" :
 		raise ApiError("bad spec filename %s" % specfname)

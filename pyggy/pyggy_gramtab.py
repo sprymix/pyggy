@@ -166,7 +166,7 @@ action = {(43, 'TOK_OPAREN'): [('reduce', ('rhsel', 3, 18))], (39, 'TOK_SRCCODE'
 semactions = [action0, action0, action1, action2, action3, action4, action5, action6, action7, action8, action9, action10, action11, action12, action13, action14, action15, action16, action17, action18, action19, action20, action21, action22, action23, action24]
 gramspec = (goto, action, semactions)
 
-from errors import *
+from pyggy.errors import *
 	
 	# data collected when processing the parse.  
 globcode = ""

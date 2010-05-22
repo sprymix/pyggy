@@ -7,17 +7,17 @@
 import sys
 import getopt
 
-from errors import *
-import helpers
+from pyggy.errors import *
+from pyggy import helpers
 
 # for lexing/parsing the spec
-import srgram
-import glr
-import lexer
+from pyggy import srgram
+from pyggy import glr
+from pyggy import lexer
 
-import pylly_lextab
+from pyggy import pylly_lextab
 from pylly_lextab import lexspec
-import pylly_gramtab
+from pyggy import pylly_gramtab
 gt = pylly_gramtab
 
 # post processing
@@ -35,7 +35,7 @@ def genfunc(f, name, re, code) :
 
 # generate a lexer spec file.
 def gen(fname, d) :
-	f = file(fname, 'w')
+	f = open(fname, 'w')
 	f.write("#\n# This file was automatically generated.\n\n")
 
 	# spit out the start states

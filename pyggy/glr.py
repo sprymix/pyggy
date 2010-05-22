@@ -9,9 +9,9 @@ GLR parsing algorithm from
 and is based on Tomita parsing.
 """
 
-import dot
-from util import printable
-from errors import *
+from pyggy import dot
+from pyggy.util import printable
+from pyggy.errors import *
 
 class prevlink :
 	"a link to a previous stacknode.  Each link has an associated symnode tree"

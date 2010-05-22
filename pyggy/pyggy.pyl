@@ -9,7 +9,7 @@ definitions :
 	COMMENT		"#[^\n]*"
 
 code :
-	from errors import *
+	from pyggy.errors import *
 
 	TOK_CODE = "TOK_CODE"
 	TOK_LEFT = "TOK_LEFT"

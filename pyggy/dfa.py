@@ -6,9 +6,9 @@
 
 import string
 
-from util import printable
+from pyggy.util import printable
 from nfa import *
-import dot
+from pyggy import dot
 
 class dfa :
 	def __init__(self, machlist, relist) :

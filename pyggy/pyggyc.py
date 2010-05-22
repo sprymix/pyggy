@@ -7,21 +7,21 @@ pyggy.py
 import sys
 import getopt
 
-from errors import *
-import helpers
+from pyggy.errors import *
+from pyggy import helpers
 
 # for parsing
-import lexer
-import srgram
-import glr
+from pyggy import lexer
+from pyggy import srgram
+from pyggy import glr
 
 # import our parsing table
-import pyggy_lextab
-import pyggy_gramtab
+from pyggy import pyggy_lextab
+from pyggy import pyggy_gramtab
 gt = pyggy_gramtab
 
 # for generating a new parse table
-import slrgram
+from pyggy import slrgram
 
 
 def addtagged(name, prodno) :
@@ -138,7 +138,7 @@ def postproc(conflict, debug) :
 				addconflict(conflict, prod1, r, prod2)
 
 def gen(fname, tabs) :
-	f = file(fname, "w")
+	f = open(fname, "w")
 	f.write('\n# This file was generated automatically\n')
 
 	# emit all the actions

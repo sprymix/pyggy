@@ -5,8 +5,8 @@
 #
 
 import string
-from util import printable
-from errors import *
+from pyggy.util import printable
+from pyggy.errors import *
 
 # XXX some constants that must agree with the grammar constants.
 # this kis kinda poor right now.  fixme
@@ -98,7 +98,7 @@ The subclass must provide nextch() and PUSHBACK() methods.
 			self.input = sys.stdin
 			self.bufsize = 1
 		else :
-			self.input = file(fname)
+			self.input = open(fname)
 			self.bufsize = 1024
 		self.readbuf()
 		

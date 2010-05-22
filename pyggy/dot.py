@@ -19,7 +19,7 @@ class dot :
 
 	def __start(self, name) :
 		self.fname = name + str(os.getpid()) + ".dot"
-		self.f = file(self.fname, "w")
+		self.f = open(self.fname, "w")
 		self.f.write("digraph %s {\n" % name)
 
 	def add(self, str) :

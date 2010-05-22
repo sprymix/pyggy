@@ -4,7 +4,7 @@
 #
 
 code :
-	from errors import *
+	from pyggy.errors import *
 	
 	# data collected when processing the parse.  
 	globcode = ""

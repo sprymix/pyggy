@@ -1,4 +1,4 @@
 
-from helpers import *
-from errors import *
+from pyggy.helpers import *
+from pyggy.errors import *
 

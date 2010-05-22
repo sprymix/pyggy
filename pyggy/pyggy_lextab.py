@@ -275,7 +275,7 @@ eofactions = [None, actioneof1]
 
 lexspec = (rows,acc,starts,actions,eofactions,chr2uccl)
 
-from errors import *
+from pyggy.errors import *
 
 TOK_CODE = "TOK_CODE"
 TOK_LEFT = "TOK_LEFT"

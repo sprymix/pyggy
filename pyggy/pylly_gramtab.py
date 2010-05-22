@@ -282,8 +282,8 @@ import array
 
 import nfa
 import dfa
-from util import printable
-from errors import *
+from pyggy.util import printable
+from pyggy.errors import *
 
 	# precomputed
 wildclass = map(chr, range(0,10) + range(11,256))

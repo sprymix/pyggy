@@ -4,8 +4,8 @@
 #	Implements functions for building SLR(1) parsing tables
 #
 
-from util import printable
-import dot
+from pyggy.util import printable
+from pyggy import dot
 
 debug = 0
 

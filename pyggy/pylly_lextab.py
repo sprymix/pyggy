@@ -726,7 +726,7 @@ eofactions = [None, actioneof1, actioneof2, actioneof3, actioneof4, actioneof5]
 lexspec = (rows,acc,starts,actions,eofactions,chr2uccl)
 
 import string
-from errors import *
+from pyggy.errors import *
 
 lineno = 1				# current line
 tabstop = 8				# tab is 8 spaces

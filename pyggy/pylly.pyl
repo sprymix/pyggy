@@ -16,7 +16,7 @@ definitions :
 
 code :
 	import string
-	from errors import *
+	from pyggy.errors import *
 
 	lineno = 1				# current line
 	tabstop = 8				# tab is 8 spaces
