@@ -68,7 +68,7 @@ def gen(fname, d) :
 	f.write("actions = [%s]\n" % ", ".join(acttab))
 	f.write("eofactions = [%s]\n" % ", ".join(eoftab))
 	f.write("\nlexspec = (rows,acc,starts,actions,eofactions,chr2uccl)\n")
-			
+
 	# write out the global code
 	f.write("\n")
 	f.write(gt.globcode)
@@ -113,11 +113,26 @@ def postproc(outfname, debug = 0) :
 # Debug levels less than 10 show information about the constructed lexer.
 # Higher debug levels show internal data.
 def parsespec(fname, outfname, debug = 0) :
+	pylly_lextab.lineno = 1
+	pylly_lextab.tabstop = 8
+	pylly_lextab.codedata = ""
+	pylly_lextab.curindent = [0]
+
 	l = lexer.lexer(lexspec)
 	l.setinput(fname)
 	g = srgram.SRGram(gt.gramspec)
 	p = glr.GLR(g)
 	p.setlexer(l)
+
+	from . import nfa
+	gt.n = nfa.nfa()
+	gt.globcode = ""
+	gt.namedmachines = dict()
+	gt.statenums = dict()
+	gt.eofacts = []
+	gt.statemachs = []
+	gt.actions = [None]
+	gt.relist = [None]
 
 	try :
 		tree = p.parse()
